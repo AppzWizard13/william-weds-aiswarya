@@ -92,11 +92,11 @@
             <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
                 {% with banner=banners.first %}
                     {% if banner and banner.pre_title %}
-                        <span class="pre-title" style="font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #f8c9d4; display: inline-block; margin-bottom: 20px;">{{ banner.pre_title }}</span>
+                        <span class="pre-title" style=" margin-top:400px; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #f8c9d4; display: inline-block; margin-bottom: 20px;">{{ banner.pre_title }}</span>
                     {% elif banner and banner.tagline %}
-                        <span class="pre-title" style="font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #f8c9d4; display: inline-block; margin-bottom: 20px;">{{ banner.tagline }}</span>
+                        <span class="pre-title" style=" margin-top:400px; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #f8c9d4; display: inline-block; margin-bottom: 20px;">{{ banner.tagline }}</span>
                     {% else %}
-                        <span class="pre-title" style="font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #f8c9d4; display: inline-block; margin-bottom: 20px;">We're Getting Married</span>
+                        <span class="pre-title" style=" margin-top:400px; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #f8c9d4; display: inline-block; margin-bottom: 20px;">We're Getting Married</span>
                     {% endif %}
                     
                     {% if banner and banner.title_main or banner.title_highlight %}
@@ -144,7 +144,7 @@
                         console.log("Countdown timestamp:", countDownDate);
                     </script>
 
-                    <div class="btn-group" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                    {% comment %} <div class="btn-group col-4" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
                         {% if banner and banner.rsvp_link %}
                             <a href="{{ banner.rsvp_link }}" class="btn hero-btn" style="display: inline-block; padding: 12px 30px; background: #f8c9d4; color: #333; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease;">{{ banner.button_text|default:"RSVP Now" }}</a>
                         {% else %}
@@ -156,7 +156,7 @@
                         {% else %}
                             <a href="#details" class="btn hero-btn-outline" style="display: inline-block; padding: 12px 30px; background: transparent; color: white; text-decoration: none; border-radius: 50px; font-weight: 600; border: 2px solid white; transition: all 0.3s ease;">View Details</a>
                         {% endif %}
-                    </div>
+                    </div> {% endcomment %}
                 {% endwith %}
             </div>
         </div>
@@ -200,7 +200,8 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6" data-aos="fade-right">
-                    <img src="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/our-story.png" alt="Our Story" class="img-fluid story-img">
+                    <!-- Use the image URL passed from the view -->
+                    <img src="{{ story_image }}" alt="Our Story" class="img-fluid story-img">
                 </div>
                 <div class="col-lg-6" data-aos="fade-left">
                     <div class="ps-lg-5 mt-5 mt-lg-0">
@@ -371,42 +372,14 @@
                 <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">MOMENTS WE CHERISH</p>
             </div>
             <div class="row g-4">
+                {% for img in gallery_images %}
                 <div class="col-md-4 col-sm-6 gallery-item" data-aos="zoom-in">
-                    <a href="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/the-proposal.png" data-lightbox="gallery" data-title="The Proposal">
-                        <img src="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/the-proposal.png" class="img-fluid w-100" alt="Gallery Image">
+                    <a href="{{ img.image.url }}" data-lightbox="gallery" data-title="{{ img.title }}">
+                        <img src="{{ img.image.url }}" class="img-fluid w-100" alt="{{ img.title }}">
                         <div class="overlay"><i class="fas fa-search-plus"></i></div>
                     </a>
                 </div>
-                <div class="col-md-4 col-sm-6 gallery-item" data-aos="zoom-in" data-aos-delay="100">
-                    <a href="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/our-first-trip.png" data-lightbox="gallery" data-title="Our First Trip">
-                        <img src="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/our-first-trip.png" class="img-fluid w-100" alt="Gallery Image">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </a>
-                </div>
-                <div class="col-md-4 col-sm-6 gallery-item" data-aos="zoom-in" data-aos-delay="200">
-                    <a href="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/coffee-shop-memories.png" data-lightbox="gallery" data-title="Coffee Shop Memories">
-                        <img src="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/coffee-shop-memories.png" class="img-fluid w-100" alt="Gallery Image">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </a>
-                </div>
-                <div class="col-md-4 col-sm-6 gallery-item" data-aos="zoom-in" data-aos-delay="300">
-                    <a href="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/hiking-adventures.png" data-lightbox="gallery" data-title="Hiking Adventures">
-                        <img src="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/hiking-adventures.png" class="img-fluid w-100" alt="Gallery Image">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </a>
-                </div>
-                <div class="col-md-4 col-sm-6 gallery-item" data-aos="zoom-in" data-aos-delay="400">
-                    <a href="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/engagement-photoshoot.png" data-lightbox="gallery" data-title="Engagement Photoshoot">
-                        <img src="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/engagement-photoshoot.png" class="img-fluid w-100" alt="Gallery Image">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </a>
-                </div>
-                <div class="col-md-4 col-sm-6 gallery-item" data-aos="zoom-in" data-aos-delay="500">
-                    <a href="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/just-because.png" data-lightbox="gallery" data-title="Just Because">
-                        <img src="https://raw.githubusercontent.com/farazc60/Project-Images/refs/heads/main/wedding_template/just-because.png" class="img-fluid w-100" alt="Gallery Image">
-                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                    </a>
-                </div>
+                {% endfor %}
             </div>
             <div class="text-center mt-5">
                 <a href="#" class="btn btn-primary">View Full Gallery</a>

@@ -19,7 +19,7 @@
         </h1>
         <p class="mb-0 text-muted fs-6">{{ event.date|date:"EEEE, MMMM d, yyyy" }} • {{ event.time|time:"h:mm a" }}</p>
       </div>
-      <a href="/admin/events/event/{{ event.pk }}/update/" class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm">
+      <a href="/events/event/{{ event.pk }}/update/" class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm">
         <i class="bx bx-edit me-2"></i>Edit
       </a>
     </div>
@@ -98,10 +98,10 @@
             <h5 class="fw-bold mb-0" style="color: var(--md-sys-color-on-surface);">Wedding Party</h5>
           </div>
           <div class="p-4">
-            <a href="/admin/events/weddingparty/add/" class="btn btn-outline-primary w-100 rounded-pill py-3 mb-3 fw-semibold">
+            <a href="/events/weddingparty/add/" class="btn btn-outline-primary w-100 rounded-pill py-3 mb-3 fw-semibold">
               <i class="bx bx-user-plus me-2"></i>Add Wedding Party Member
             </a>
-            <a href="/admin/events/weddingparty/" class="btn btn-outline-secondary w-100 rounded-pill py-3 fw-semibold">
+            <a href="/events/weddingparty/" class="btn btn-outline-secondary w-100 rounded-pill py-3 fw-semibold">
               <i class="bx bx-group me-2"></i>View All Members
             </a>
           </div>
@@ -113,10 +113,10 @@
             <h5 class="fw-bold mb-0" style="color: var(--md-sys-color-on-surface);">Photo Gallery</h5>
           </div>
           <div class="p-4">
-            <a href="/admin/events/galleryimage/add/" class="btn btn-outline-success w-100 rounded-pill py-3 mb-3 fw-semibold">
+            <a href="/events/galleryimage/add/" class="btn btn-outline-success w-100 rounded-pill py-3 mb-3 fw-semibold">
               <i class="bx bx-image-add me-2"></i>Add Gallery Image
             </a>
-            <a href="{% url 'events:gallery' %}" class="btn btn-outline-secondary w-100 rounded-pill py-3 fw-semibold">
+            <a href="{% url 'events:gallery_list' %}" class="btn btn-outline-secondary w-100 rounded-pill py-3 fw-semibold">
               <i class="bx bx-images me-2"></i>View Gallery
             </a>
           </div>

@@ -1,0 +1,321 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'mob-custom/theme-enh1.css' %}">
+<link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+
+
+    <!-- Header -->
+    <div class="md-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div>
+          <h1 class="md-title mb-0">
+            {% if form.instance.pk %}Edit{% else %}Add{% endif %} Gallery Image
+          </h1>
+          <p class="md-subtitle">
+            {% if form.instance.pk %}
+              {{ form.instance.title }}
+            {% else %}
+              Upload a new image to the wedding gallery
+            {% endif %}
+          </p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="{% url 'events:gallery_list' %}"
+             class="btn btn-outline-secondary rounded-pill px-4 py-2">
+            <i class="bx bx-arrow-back me-2"></i>Back to Gallery
+          </a>
+          <button type="submit" form="galleryImageForm"
+                  class="md-filled-button">
+            <i class="bx bx-save me-2"></i>
+            {% if form.instance.pk %}Update{% else %}Create{% endif %} Image
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Form Card -->
+    <div class="md-card">
+      {% if form.errors %}
+      <div class="alert alert-danger md-alert mb-4">
+        <h6 class="mb-2">Please fix these errors:</h6>
+        <ul class="mb-0">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+
+      <form method="post" id="galleryImageForm" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row g-4" style="padding: 50px;">
+
+
+          <!-- Event (optional) -->
+          <div class="col-lg-6">
+            <div class="md-form-group">
+              <label class="form-label fw-semibold">Event (optional)</label>
+              {{ form.event }}
+            </div>
+          </div>
+
+
+          <!-- Title -->
+          <div class="col-lg-6">
+            <div class="md-form-group">
+              <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+              {{ form.title }}
+            </div>
+          </div>
+
+
+          <!-- Image (with preview) -->
+          <div class="col-12">
+            <div class="md-form-group">
+              <label class="form-label fw-semibold">Image <span class="text-danger">*</span></label>
+
+              <!-- Image Preview Container -->
+              <div class="event-image-container mb-3">
+                {% if form.instance.image %}
+                  <div class="current-image mb-3">
+                    <img id="current-image-preview"
+                         src="{{ form.instance.image.url }}"
+                         alt="Current image"
+                         class="img-fluid rounded"
+                         style="max-height: 200px;">
+                    <p class="text-muted small mt-2">Current image</p>
+                  </div>
+                {% endif %}
+
+                <!-- Upload Zone -->
+                <div class="image-upload-zone position-relative p-4 border-2 border-dashed rounded-3 text-center"
+                     style="border-color: rgba(25, 118, 210, 0.3); background: #f8fafc; cursor: pointer;">
+                  <div class="upload-placeholder d-flex flex-column align-items-center justify-content-center">
+                    <i class="bx bx-image-add fs-1 mb-3 opacity-75"></i>
+                    <h6 class="mb-2 fw-semibold">Upload Image</h6>
+                    <small>Click or drag to upload (Max 5MB)</small>
+                    <small class="text-muted">Recommended: 1200×800px or higher</small>
+                  </div>
+                  {{ form.image }}
+                </div>
+
+                <!-- New Preview -->
+                <div id="new-image-preview" class="mt-3" style="display: none;">
+                  <p class="fw-semibold mb-2">Preview:</p>
+                  <img id="preview-img" class="img-fluid rounded" style="max-height: 200px;">
+                  <button type="button" id="clear-image-btn" class="btn btn-sm btn-outline-danger mt-2">
+                    <i class="bx bx-trash me-1"></i>Remove
+                  </button>
+                </div>
+                <small class="text-muted d-block mt-2">JPG, PNG, GIF • Max 5MB</small>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Description -->
+          <div class="col-12">
+            <div class="md-form-group">
+              <label class="form-label fw-semibold">Description</label>
+              {{ form.description }}
+            </div>
+          </div>
+
+
+          <!-- Optional: Order if you added it -->
+          {% if form.order %}
+          <div class="col-lg-6">
+            <div class="md-form-group">
+              <label class="form-label fw-semibold">Order</label>
+              {{ form.order }}
+              <small class="text-muted d-block mt-1">
+                Lower number = appears earlier in the gallery.
+              </small>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<style>
+.md-form-group {
+  margin-bottom: 1.5rem;
+}
+.md-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+.md-input, .form-control, .form-select {
+  border: 2px solid rgba(25, 118, 210, 0.2) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  background: #f8fafc !important;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+.md-input:focus, .form-control:focus, .form-select:focus {
+  border-color: var(--md-sys-color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+  background: white !important;
+}
+.md-filled-button {
+  background: linear-gradient(135deg, var(--md-sys-color-primary), #1e40af);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.md-filled-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(25, 118, 210, 0.4);
+}
+.md-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.alert, .md-alert {
+  border-radius: 12px;
+  border: none;
+}
+.image-upload-zone {
+  transition: all 0.3s ease;
+}
+.image-upload-zone:hover {
+  border-color: var(--md-sys-color-primary);
+  background: rgba(25, 118, 210, 0.05);
+}
+.event-image-container input[type="file"] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  top: 0;
+  left: 0;
+}
+@media (max-width: 768px) {
+  .md-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .md-filled-button {
+    width: 100%;
+  }
+}
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('galleryImageForm');
+  const imageInput = document.querySelector('input[name="image"]');
+  const uploadZone = document.querySelector('.image-upload-zone');
+  const newPreviewDiv = document.getElementById('new-image-preview');
+  const previewImg = document.getElementById('preview-img');
+  const clearBtn = document.getElementById('clear-image-btn');
+  const currentImageDiv = document.querySelector('.current-image');
+
+
+  // Make upload zone clickable
+  if (uploadZone && imageInput) {
+    uploadZone.addEventListener('click', function(e) {
+      if (!e.target.classList.contains('image-upload-zone')) return;
+      imageInput.click();
+    });
+  }
+
+
+  // Image preview
+  if (imageInput) {
+    imageInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+
+      // Size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('❌ Image must be less than 5MB!');
+        imageInput.value = '';
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        alert('❌ Please select an image file (JPG, PNG, GIF)');
+        imageInput.value = '';
+        return;
+      }
+
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+        newPreviewDiv.style.display = 'block';
+        if (currentImageDiv) {
+          currentImageDiv.style.display = 'none';
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+
+  // Clear image
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function() {
+      imageInput.value = '';
+      newPreviewDiv.style.display = 'none';
+      previewImg.src = '';
+      if (currentImageDiv) {
+        currentImageDiv.style.display = 'block';
+      }
+    });
+  }
+
+
+  // Auto‑submit on Enter in title
+  const titleField = form.querySelector('input[name="title"]');
+  if (titleField) {
+    titleField.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        form.submit();
+      }
+    });
+  }
+
+
+  // Basic validation before submit
+  form.addEventListener('submit', function(e) {
+    const title = form.querySelector('input[name="title"]').value.trim();
+    const image = form.querySelector('input[name="image"]').value;
+
+
+    if (!title || (!image && !form.querySelector('input[name="image"].existing'))) {
+      e.preventDefault();
+      alert('❌ Title and image are required!');
+    }
+  });
+});
+</script>
+
+
+{% endblock %}

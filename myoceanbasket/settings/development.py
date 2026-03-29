@@ -19,17 +19,6 @@ ENABLE_QR_SCHEDULER = False   # Set to False to disable
 USERNAME_PREFIX = "MEMBER-DEV-TEST"
 SUBSCRIPTION_ORDER_PREFIX = "SUB-ORDER-DEV-TEST"
 
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'), 
-#         'NAME': os.getenv('DB_NAME', 'myoceanbasket_db'), 
-#         'USER': os.getenv('DB_USER', 'myoceanbasket_admin'),
-#         'PASSWORD': os.getenv('DB_PASSWORD', 'xPL7y6qe1gLHAg2B9SWvW06vXSC8lxSe'),
-#         'HOST': os.getenv('DB_HOST', 'db'),
-#         'PORT': os.getenv('DB_PORT', '5432'),
-#     }
-# }
 # Alert testing code 
 # from django.contrib.auth import get_user_model
 # from api_v1.models import Alert
@@ -54,21 +43,14 @@ SUBSCRIPTION_ORDER_PREFIX = "SUB-ORDER-DEV-TEST"
 
 
 # Database configuration for local development
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'myoceanbasket_db',
-#         'USER': 'myoceanbasket_admin',
-#         'PASSWORD': 'xPL7y6qe1gLHAg2B9SWvW06vXSC8lxSe',
-#         'HOST': 'db',  # or 'myoceanbasket_db' if your Django app runs in Docker
-#         'PORT': '5432',
-
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'myoceanbasket_db',
+        'USER': 'myoceanbasket_admin',
+        'PASSWORD': 'xPL7y6qe1gLHAg2B9SWvW06vXSC8lxSe',
+        'HOST': 'db',  # or 'myoceanbasket_db' if your Django app runs in Docker
+        'PORT': '5432',
+
     }
 }

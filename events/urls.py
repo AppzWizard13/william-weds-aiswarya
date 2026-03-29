@@ -25,7 +25,7 @@ urlpatterns = [
     path('wedding-party/<int:pk>/update/', views.WeddingPartyUpdateView.as_view(), name='wedding_party_update'),
 
     # ===== GALLERY =====
-    path('gallery/', views.GalleryView.as_view(), name='gallery'),
+    path('gallery/', views.GalleryView.as_view(), name='gallery_list'),
     path('gallery/add/', views.GalleryImageCreateView.as_view(), name='gallery_create'),
     path('gallery/<int:pk>/update/', views.GalleryImageUpdateView.as_view(), name='gallery_update'),
 
@@ -37,7 +37,7 @@ urlpatterns = [
     path('registry/', views.RegistryView.as_view(), name='registry'),
 
     # ===== EVENT BANNERS =====
-    path('event_banners/', views.EventBannerListView.as_view(), name='banner_list'),
+    path('event_banners/', views.EventBannerListView.as_view(), name='event_banner_list'),
     path('event_banners/add/', views.EventBannerCreateView.as_view(), name='banner_create'),
     path('event_banners/<int:pk>/', views.EventBannerDetailView.as_view(), name='banner_detail'),
     path('event_banners/<int:pk>/update/', views.EventBannerUpdateView.as_view(), name='banner_update'),

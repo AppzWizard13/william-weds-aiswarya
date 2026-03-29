@@ -27,16 +27,15 @@ class HomeView(TemplateView):
         context['wedding_party'] = WeddingParty.objects.all()
         context['gallery_images'] = GalleryImage.objects.all()[:6]
         context['banners'] = EventBanner.objects.order_by('series')
-        
+
         # Get nearest upcoming event
         now = timezone.now()
         upcoming_events = Event.objects.filter(
             date__gte=now.date()
         ).order_by('date', 'time')
-        
+
         if upcoming_events.exists():
             context['next_event'] = upcoming_events.first()
-            # Combine date and time for datetime object
             next_event_datetime = datetime.combine(
                 context['next_event'].date,
                 context['next_event'].time
@@ -45,9 +44,16 @@ class HomeView(TemplateView):
         else:
             context['next_event'] = None
             context['next_event_datetime'] = None
-        print("next_event_datetime", context['next_event_datetime'])
-        return context
 
+        # Get banner where series = 19 and order = 10
+        story_banner = (
+            EventBanner.objects
+            .filter(series=10)
+            .first()
+        )
+        context['story_image'] = story_banner.image.url if story_banner else ""
+
+        return context
 # ===== EVENTS CRUD =====
 class EventsListView(ListView):
     model = Event
@@ -194,7 +200,7 @@ class GalleryView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['page_name'] = 'gallery'
+        context['page_name'] = 'gallery_list'
         context['events'] = Event.objects.all()
         return context
 
@@ -202,7 +208,7 @@ class GalleryImageCreateView(CreateView):
     model = GalleryImage
     form_class = GalleryImageForm
     template_name = 'events/gallery_image_form.html'
-    success_url = reverse_lazy('events:gallery')
+    success_url = reverse_lazy('events:gallery_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -214,7 +220,7 @@ class GalleryImageUpdateView(UpdateView):
     model = GalleryImage
     form_class = GalleryImageForm
     template_name = 'events/gallery_image_form.html'
-    success_url = reverse_lazy('events:gallery')
+    success_url = reverse_lazy('events:gallery_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -250,24 +256,30 @@ class RegistryView(TemplateView):
         return context
 
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
+from django.conf import settings
+
+from .models import EventBanner
+
 
 class EventBannerListView(LoginRequiredMixin, ListView):
     model = EventBanner
     template_name = 'admin_panel/event_banner_list.html'
-    context_object_name = 'event_banner_list'
+    context_object_name = 'banners'  # changed from event_banner_list
 
     def get_template_names(self):
         admin_mode = getattr(settings, 'ADMIN_PANEL_MODE', 'basic').lower()
         if admin_mode == 'advanced':
             return ['advadmin/event_banner_list.html']
-        return ['admin_panel/event_banner_list.html']
+        return [self.template_name]
 
 
 class EventBannerCreateView(LoginRequiredMixin, CreateView):
     model = EventBanner
     form_class = EventBannerForm
     template_name = 'admin_panel/event_banner_form.html.html'
-    success_url = reverse_lazy('event_banner_list')
+    success_url = reverse_lazy('events:event_banner_list')
 
     def form_valid(self, form):
         messages.success(self.request, "EventBanner added successfully!")
@@ -300,7 +312,7 @@ class EventBannerUpdateView(LoginRequiredMixin, UpdateView):
     model = EventBanner
     form_class = EventBannerForm
     template_name = 'admin_panel/event_banner_form.html'
-    success_url = reverse_lazy('event_banner_list')
+    success_url = reverse_lazy('events:event_banner_list')
 
     def form_valid(self, form):
         messages.success(self.request, "EventBanner updated successfully!")
@@ -319,7 +331,7 @@ class EventBannerUpdateView(LoginRequiredMixin, UpdateView):
 
 class EventBannerDeleteView(LoginRequiredMixin, DeleteView):
     model = EventBanner
-    success_url = reverse_lazy('event_banner_list')
+    success_url = reverse_lazy('events:event_banner_list')
     template_name = None
 
     def get(self, request, *args, **kwargs):
