@@ -1,0 +1,76 @@
+{% extends 'myoceanbasket/index.html' %}
+{% block content %}
+{% load static %}
+
+<!-- OTP Login Start -->
+<div class="container-xxl py-5" id="otp-login">
+    <div class="container py-5 px-lg-5">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h5 class="text-primary-gradient fw-medium">Secure Login</h5>
+            <h1 class="mb-5">Login with OTP</h1>
+            <p class="text-muted">Enter your phone number and we'll send you a one-time password.</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="wow fadeInUp" data-wow-delay="0.3s">
+                    <form method="POST" action="{% url 'login_with_otp' %}">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            {% if messages %}
+                            <div class="col-12">
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} text-center mb-2" role="alert">
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="phone_number" name="phone_number"
+                                        placeholder="+91XXXXXXXXXX" required>
+                                    <label for="phone_number">Enter your mobile number</label>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button class="btn btn-primary-gradient rounded-pill py-3 px-5 w-100" type="submit">Send
+                                    OTP</button>
+                            </div>
+                            <div class="col-12 text-center">
+                                <div class="my-3 text-muted">or</div>
+                                <a href="{% url 'login' %}"
+                                    class="btn btn-outline-secondary rounded-pill py-3 px-5 w-100 my-1">
+                                    Back to Login
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- OTP Login End -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/company-data/')
+            .then(response => response.json())
+            .then(data => {
+                const logoImg = document.getElementById('company-logo-svg');
+                const faviconLink = document.querySelector("link[rel='icon']");
+
+                if (data.company_logo_svg_url && logoImg) {
+                    logoImg.src = data.company_logo_svg_url;
+                    logoImg.alt = data.company_name + " Logo";
+                    logoImg.style.display = "block";
+                }
+
+                if (data.company_favicon_url && faviconLink) {
+                    faviconLink.href = data.company_favicon_url;
+                }
+            })
+            .catch(error => console.error('Company data fetch failed', error));
+    });
+</script>
+
+{% endblock %}

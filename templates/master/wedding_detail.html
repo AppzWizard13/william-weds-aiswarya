@@ -1,0 +1,275 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Header -->
+    <div class="md-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div>
+          <h1 class="md-title mb-0">{{ wedding.groom_name }} & {{ wedding.bride_name }}</h1>
+          <p class="md-subtitle">Wedding Details and Management</p>
+        </div>
+        <div class="d-flex gap-3">
+          <a href="{% url 'events:wedding_update' wedding.id %}" class="md-filled-button">
+            <i class="bx bx-edit-alt me-2"></i>Edit Wedding
+          </a>
+          <a href="{% url 'events:wedding_list' %}" class="md-outlined-button">
+            <i class="bx bx-arrow-back me-2"></i>Back to List
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="md-card text-center p-4">
+          <i class="bx bx-group fs-1 text-primary"></i>
+          <h3 class="mt-2 mb-0">{{ total_rsvps }}</h3>
+          <p class="text-muted mb-0">Total RSVPs</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="md-card text-center p-4">
+          <i class="bx bx-check-circle fs-1 text-success"></i>
+          <h3 class="mt-2 mb-0">{{ attending_count }}</h3>
+          <p class="text-muted mb-0">Attending</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="md-card text-center p-4">
+          <i class="bx bx-question-mark fs-1 text-warning"></i>
+          <h3 class="mt-2 mb-0">{{ maybe_count }}</h3>
+          <p class="text-muted mb-0">Maybe</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="md-card text-center p-4">
+          <i class="bx bx-x-circle fs-1 text-danger"></i>
+          <h3 class="mt-2 mb-0">{{ not_attending_count }}</h3>
+          <p class="text-muted mb-0">Not Attending</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <a href="{% url 'events:schedule_create' wedding.id %}" class="text-decoration-none">
+          <div class="md-card text-center p-4 hover-card">
+            <i class="bx bx-calendar-event fs-1 text-primary"></i>
+            <h5 class="mt-2 mb-0">Add Event Schedule</h5>
+            <small class="text-muted">Create new event</small>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="{% url 'events:gallery_create' wedding.id %}" class="text-decoration-none">
+          <div class="md-card text-center p-4 hover-card">
+            <i class="bx bx-image fs-1 text-success"></i>
+            <h5 class="mt-2 mb-0">Add Gallery Image</h5>
+            <small class="text-muted">Upload photos</small>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="{% url 'events:service_create' wedding.id %}" class="text-decoration-none">
+          <div class="md-card text-center p-4 hover-card">
+            <i class="bx bx-gift fs-1 text-warning"></i>
+            <h5 class="mt-2 mb-0">Add Service</h5>
+            <small class="text-muted">Wedding services</small>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="{% url 'events:rsvp_list' %}?wedding={{ wedding.id }}" class="text-decoration-none">
+          <div class="md-card text-center p-4 hover-card">
+            <i class="bx bx-envelope fs-1 text-info"></i>
+            <h5 class="mt-2 mb-0">View RSVPs</h5>
+            <small class="text-muted">Manage guests</small>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Event Schedules -->
+    <div class="md-card mb-4">
+      <div class="md-card-header">
+        <h5 class="mb-0">Event Schedule</h5>
+        <a href="{% url 'events:schedule_create' wedding.id %}" class="btn btn-sm btn-primary">
+          <i class="bx bx-plus"></i> Add Event
+        </a>
+      </div>
+      <div class="table-responsive">
+        <table class="table md-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Location</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for schedule in schedules %}
+            <tr>
+              <td>{{ schedule.custom_title|default:schedule.get_title_display }}</td>
+              <td>{{ schedule.event_date|date:"M d, Y" }}</td>
+              <td>{{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}</td>
+              <td>{{ schedule.location|default:"-" }}</td>
+              <td>
+                <a href="{% url 'events:schedule_update' schedule.id %}" class="btn btn-sm btn-warning">
+                  <i class="bx bx-edit"></i>
+                </a>
+                <a href="{% url 'events:schedule_delete' schedule.id %}" class="btn btn-sm btn-danger">
+                  <i class="bx bx-trash"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">No events scheduled yet</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="md-card mb-4">
+      <div class="md-card-header">
+        <h5 class="mb-0">Photo Gallery</h5>
+        <a href="{% url 'events:gallery_create' wedding.id %}" class="btn btn-sm btn-primary">
+          <i class="bx bx-plus"></i> Add Image
+        </a>
+      </div>
+      <div class="p-4">
+        <div class="row g-4">
+          {% for image in gallery_images %}
+          <div class="col-md-3">
+            <div class="gallery-item position-relative">
+              <img src="{{ image.image.url }}" class="img-fluid rounded" style="height: 200px; width: 100%; object-fit: cover;">
+              <div class="position-absolute top-0 end-0 p-2">
+                <a href="{% url 'events:gallery_update' image.id %}" class="btn btn-sm btn-warning">
+                  <i class="bx bx-edit"></i>
+                </a>
+                <a href="{% url 'events:gallery_delete' image.id %}" class="btn btn-sm btn-danger">
+                  <i class="bx bx-trash"></i>
+                </a>
+              </div>
+              {% if image.caption %}
+              <p class="mt-2 small text-muted">{{ image.caption|truncatechars:50 }}</p>
+              {% endif %}
+            </div>
+          </div>
+          {% empty %}
+          <div class="col-12 text-center py-5">
+            <p class="text-muted">No gallery images yet</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Wishes -->
+    <div class="md-card mb-4">
+      <div class="md-card-header">
+        <h5 class="mb-0">Friends Wishes</h5>
+        <a href="{% url 'events:wish_list' %}?wedding={{ wedding.id }}" class="btn btn-sm btn-primary">
+          Manage Wishes
+        </a>
+      </div>
+      <div class="p-4">
+        <div class="row g-4">
+          {% for wish in wishes|slice:":4" %}
+          <div class="col-md-6">
+            <div class="card border-0 bg-light p-3">
+              <p class="mb-2">"{{ wish.content|truncatechars:150 }}"</p>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <div>
+                  <strong>{{ wish.author_name }}</strong>
+                  <small class="text-muted"> via {{ wish.author_social }}</small>
+                </div>
+                <div>
+                  {% if not wish.is_approved %}
+                  <span class="badge bg-warning">Pending</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="col-12 text-center py-5">
+            <p class="text-muted">No wishes yet</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div class="md-card">
+      <div class="md-card-header">
+        <h5 class="mb-0">Wedding Services</h5>
+        <a href="{% url 'events:service_create' wedding.id %}" class="btn btn-sm btn-primary">
+          <i class="bx bx-plus"></i> Add Service
+        </a>
+      </div>
+      <div class="p-4">
+        <div class="row g-4">
+          {% for service in services %}
+          <div class="col-md-4">
+            <div class="card h-100">
+              {% if service.service_image %}
+              <img src="{{ service.service_image.url }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">{{ service.title }}</h5>
+                <p class="card-text small">{{ service.description|truncatechars:100 }}</p>
+                <div class="d-flex gap-2">
+                  <a href="{% url 'events:service_update' service.id %}" class="btn btn-sm btn-warning">Edit</a>
+                  <a href="{% url 'events:service_delete' service.id %}" class="btn btn-sm btn-danger">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="col-12 text-center py-5">
+            <p class="text-muted">No services added yet</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.hover-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+}
+.gallery-item .btn {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.gallery-item:hover .btn {
+  opacity: 1;
+}
+</style>
+{% endblock %}

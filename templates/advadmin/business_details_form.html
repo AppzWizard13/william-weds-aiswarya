@@ -1,0 +1,618 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Load custom theme CSS -->
+<link rel="stylesheet" href="{% static 'mob-custom/theme-enh1.css' %}"> 
+{% comment %} <link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">  {% endcomment %}
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- MD3 Header -->
+    <div class="md-header mb-4">
+      <div class="row align-items-center">
+        <div class="col">
+          <h1 class="md-title mb-1">Business Details</h1>
+          <p class="md-subtitle mb-0">Manage company information and settings</p>
+        </div>
+        <div class="col-auto">
+          <a href="{% url 'dashboard' %}" class="md-filled-button">
+            <i class="bx bx-arrow-back me-2"></i> Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Section - Fixed positioning -->
+    {% if messages %}
+    <div class="messages-section mb-4">
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show d-flex align-items-center shadow-sm rounded-3" 
+           style="border-left: 5px solid {% if message.tags == 'error' %}#dc3545{% else %}#198754{% endif %}; background: white;">
+        <div class="rounded-circle p-2 me-3" 
+             style="background: {% if message.tags == 'error' %}rgba(220,53,69,0.15){% else %}rgba(25,135,84,0.15){% endif %}; 
+                    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+          <i class="bx {% if message.tags == 'error' %}bx-error-circle{% else %}bx-check-circle{% endif %}" 
+             style="font-size: 20px; color: {% if message.tags == 'error' %}#dc3545{% else %}#198754{% endif %};"></i>
+        </div>
+        <span class="fw-medium flex-grow-1">{{ message }}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- MD3 Tabs - Business Details Active -->
+    <div class="md-tabs-container mb-4">
+      <ul class="nav nav-pills flex-column flex-md-row gap-2 md-tab-wrapper">
+
+        <li class="nav-item">
+          <a class="nav-link md-tab" href="{% url 'account_settings' %}">
+            <i class="bx bx-user md-tab-icon"></i>
+            <span class="md-tab-label">Account</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link md-tab active" href="{% url 'business_details' %}">
+            <i class="bx bx-building-house md-tab-icon"></i>
+            <span class="md-tab-label">Business Details</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link md-tab" href="#">
+            <i class="bx bx-link-alt md-tab-icon"></i>
+            <span class="md-tab-label">Connections</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Form Errors -->
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger md-card mb-4">
+      <i class="bx bx-error-circle me-2"></i>
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <!-- Main Form -->
+    <form method="post" enctype="multipart/form-data" class="md-form">
+      {% csrf_token %}
+      
+      <div class="row g-4">
+        <!-- Left Column - Company Information -->
+        <div class="col-lg-8">
+          <div class="md-card">
+            <div class="md-card-header">
+              <h5 class="mb-0">
+                <i class="bx bx-building me-2 text-primary"></i>
+                Company Information
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <!-- Company Name -->
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      Company Name <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" class="form-control md-field {% if form.company_name.errors %}is-invalid{% endif %}" 
+                           name="company_name" value="{{ form.company_name.value|default:'' }}" 
+                           placeholder="Enter company name" required>
+                    {% if form.company_name.errors %}
+                      <div class="invalid-feedback">{{ form.company_name.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Company Tagline -->
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">Company Tagline</label>
+                    <input type="text" class="form-control md-field {% if form.company_tagline.errors %}is-invalid{% endif %}" 
+                           name="company_tagline" value="{{ form.company_tagline.value|default:'' }}" 
+                           placeholder="Enter tagline">
+                    {% if form.company_tagline.errors %}
+                      <div class="invalid-feedback">{{ form.company_tagline.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Primary Mobile -->
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      Primary Mobile <span class="text-danger">*</span>
+                    </label>
+                    <input type="tel" class="form-control md-field {% if form.info_mobile.errors %}is-invalid{% endif %}" 
+                           name="info_mobile" value="{{ form.info_mobile.value|default:'' }}" 
+                           placeholder="+91 12345 67890" required>
+                    {% if form.info_mobile.errors %}
+                      <div class="invalid-feedback">{{ form.info_mobile.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Primary Email -->
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      Primary Email <span class="text-danger">*</span>
+                    </label>
+                    <input type="email" class="form-control md-field {% if form.info_email.errors %}is-invalid{% endif %}" 
+                           name="info_email" value="{{ form.info_email.value|default:'' }}" 
+                           placeholder="info@company.com" required>
+                    {% if form.info_email.errors %}
+                      <div class="invalid-feedback">{{ form.info_email.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Physical Address -->
+                <div class="col-12">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">Physical Address</label>
+                    <textarea class="form-control md-field {% if form.offline_address.errors %}is-invalid{% endif %}" 
+                              name="offline_address" rows="3" placeholder="Enter complete address">{{ form.offline_address.value|default:'' }}</textarea>
+                    {% if form.offline_address.errors %}
+                      <div class="invalid-feedback">{{ form.offline_address.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Social Media Row -->
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      <i class="bx bxl-instagram text-danger me-1"></i> Instagram
+                    </label>
+                    <input type="url" class="form-control md-field {% if form.company_instagram.errors %}is-invalid{% endif %}" 
+                           name="company_instagram" value="{{ form.company_instagram.value|default:'' }}" 
+                           placeholder="https://instagram.com/...">
+                    {% if form.company_instagram.errors %}
+                      <div class="invalid-feedback">{{ form.company_instagram.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      <i class="bx bxl-facebook-circle text-primary me-1"></i> Facebook
+                    </label>
+                    <input type="url" class="form-control md-field {% if form.company_facebook.errors %}is-invalid{% endif %}" 
+                           name="company_facebook" value="{{ form.company_facebook.value|default:'' }}" 
+                           placeholder="https://facebook.com/...">
+                    {% if form.company_facebook.errors %}
+                      <div class="invalid-feedback">{{ form.company_facebook.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- CEO Email & GSTN -->
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">CEO Email</label>
+                    <input type="email" class="form-control md-field {% if form.company_email_ceo.errors %}is-invalid{% endif %}" 
+                           name="company_email_ceo" value="{{ form.company_email_ceo.value|default:'' }}" 
+                           placeholder="ceo@company.com">
+                    {% if form.company_email_ceo.errors %}
+                      <div class="invalid-feedback">{{ form.company_email_ceo.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">GSTN</label>
+                    <input type="text" class="form-control md-field {% if form.gstn.errors %}is-invalid{% endif %}" 
+                           name="gstn" value="{{ form.gstn.value|default:'' }}" 
+                           placeholder="22AAAAA0000A1Z5">
+                    {% if form.gstn.errors %}
+                      <div class="invalid-feedback">{{ form.gstn.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Contact Information (Now Full Width for Brand Assets & Hours) -->
+        <div class="col-lg-4">
+          <!-- Contact Information Card -->
+          <div class="md-card mb-4">
+            <div class="md-card-header">
+              <h5 class="mb-0">
+                <i class="bx bx-phone-call me-2 text-success"></i>
+                Contact Information
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <div class="col-12">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      Complaint Mobile <span class="text-danger">*</span>
+                    </label>
+                    <input type="tel" class="form-control md-field {% if form.complaint_mobile.errors %}is-invalid{% endif %}" 
+                           name="complaint_mobile" value="{{ form.complaint_mobile.value|default:'' }}" 
+                           placeholder="+91 12345 67890" required>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      Complaint Email <span class="text-danger">*</span>
+                    </label>
+                    <input type="email" class="form-control md-field {% if form.complaint_email.errors %}is-invalid{% endif %}" 
+                           name="complaint_email" value="{{ form.complaint_email.value|default:'' }}" 
+                           placeholder="complaint@company.com" required>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      Sales Mobile <span class="text-danger">*</span>
+                    </label>
+                    <input type="tel" class="form-control md-field {% if form.sales_mobile.errors %}is-invalid{% endif %}" 
+                           name="sales_mobile" value="{{ form.sales_mobile.value|default:'' }}" 
+                           placeholder="+91 12345 67890" required>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      Sales Email <span class="text-danger">*</span>
+                    </label>
+                    <input type="email" class="form-control md-field {% if form.sales_email.errors %}is-invalid{% endif %}" 
+                           name="sales_email" value="{{ form.sales_email.value|default:'' }}" 
+                           placeholder="sales@company.com" required>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      <i class="bx bx-map me-1 text-danger"></i> Map Location
+                    </label>
+                    <input type="url" class="form-control md-field {% if form.map_location.errors %}is-invalid{% endif %}" 
+                           name="map_location" value="{{ form.map_location.value|default:'' }}" 
+                           placeholder="https://maps.google.com/...">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second Row - Brand Assets and Business Hours (Full Width) -->
+      <div class="row g-4 mt-2">
+        <!-- Brand Assets Card -->
+        <div class="col-md-6">
+          <div class="md-card">
+            <div class="md-card-header">
+              <h5 class="mb-0">
+                <i class="bx bx-image me-2 text-warning"></i>
+                Brand Assets
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <!-- Company Logo SVG with Preview -->
+                <div class="col-12">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      Company Logo SVG <span class="text-danger">*</span>
+                    </label>
+                    <input type="file" class="form-control md-field" name="company_logo_svg" accept=".svg" onchange="previewImage(this, 'svg-preview')">
+                    {% if form.instance.company_logo_svg %}
+                    <div class="mt-3 p-3 bg-light rounded-3" id="svg-preview-container">
+                      <img src="{{ form.instance.company_logo_svg.url }}" class="img-fluid preview-image" id="svg-preview" style="max-height: 80px;">
+                      <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="clearImage('svg-preview', 'company_logo_svg')">
+                        <i class="bx bx-trash"></i> Remove
+                      </button>
+                    </div>
+                    {% else %}
+                    <div class="mt-3 p-3 bg-light rounded-3 text-center" id="svg-preview-container" style="display: none;">
+                      <img src="" class="img-fluid preview-image" id="svg-preview" style="max-height: 80px;">
+                      <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="clearImage('svg-preview', 'company_logo_svg')">
+                        <i class="bx bx-trash"></i> Remove
+                      </button>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Company Logo with Preview -->
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">Company Logo</label>
+                    <input type="file" class="form-control md-field" name="company_logo" accept="image/*" onchange="previewImage(this, 'logo-preview')">
+                    {% if form.instance.company_logo %}
+                    <div class="mt-2" id="logo-preview-container">
+                      <img src="{{ form.instance.company_logo.url }}" class="img-thumbnail preview-image" id="logo-preview" style="max-height: 60px;">
+                      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="clearImage('logo-preview', 'company_logo')">
+                        <i class="bx bx-x"></i>
+                      </button>
+                    </div>
+                    {% else %}
+                    <div class="mt-2" id="logo-preview-container" style="display: none;">
+                      <img src="" class="img-thumbnail preview-image" id="logo-preview" style="max-height: 60px;">
+                      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="clearImage('logo-preview', 'company_logo')">
+                        <i class="bx bx-x"></i>
+                      </button>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Favicon with Preview -->
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">Favicon</label>
+                    <input type="file" class="form-control md-field" name="company_favicon" accept="image/*" onchange="previewImage(this, 'favicon-preview')">
+                    {% if form.instance.company_favicon %}
+                    <div class="mt-2" id="favicon-preview-container">
+                      <img src="{{ form.instance.company_favicon.url }}" class="img-thumbnail preview-image" id="favicon-preview" style="max-height: 40px;">
+                      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="clearImage('favicon-preview', 'company_favicon')">
+                        <i class="bx bx-x"></i>
+                      </button>
+                    </div>
+                    {% else %}
+                    <div class="mt-2" id="favicon-preview-container" style="display: none;">
+                      <img src="" class="img-thumbnail preview-image" id="favicon-preview" style="max-height: 40px;">
+                      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="clearImage('favicon-preview', 'company_favicon')">
+                        <i class="bx bx-x"></i>
+                      </button>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- Business Hours Card -->
+      <div class="col-md-6">
+          <div class="md-card">
+              <div class="md-card-header">
+                  <h5 class="mb-0">
+                      <i class="bx bx-time me-2 text-info"></i>
+                      Business Hours
+                  </h5>
+              </div>
+              <div class="card-body p-4">
+                  <div class="row g-4">
+                      <div class="col-md-5">
+                          <div class="md-field-wrapper">
+                              <label class="form-label fw-semibold mb-2">Opening Time</label>
+                              {{ form.opening_time }}
+                          </div>
+                      </div>
+                      <div class="col-md-5">
+                          <div class="md-field-wrapper">
+                              <label class="form-label fw-semibold mb-2">Closing Time</label>
+                              {{ form.closing_time }}
+                          </div>
+                      </div>
+                      <div class="col-md-2">
+                          <div class="md-field-wrapper">
+                              <label class="form-label fw-semibold mb-2">Closed Days</label>
+                              {{ form.closed_days }}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="mt-5 pt-4 border-top text-end">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary rounded-pill px-5 py-3 me-3">
+          <i class="bx bx-x me-2"></i>Cancel
+        </a>
+        <button type="submit" class="md-filled-button px-5 py-3">
+          <i class="bx bx-save me-2"></i>Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Image Preview JavaScript - Minimal -->
+<script>
+function previewImage(input, previewId) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById(previewId);
+      const container = document.getElementById(previewId + '-container');
+      if (preview && container) {
+        preview.src = e.target.result;
+        container.style.display = 'block';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function clearImage(previewId, inputName) {
+  const preview = document.getElementById(previewId);
+  const container = document.getElementById(previewId + '-container');
+  const fileInput = document.querySelector(`input[name="${inputName}"]`);
+  
+  if (preview && container) {
+    preview.src = '';
+    container.style.display = 'none';
+  }
+  if (fileInput) fileInput.value = '';
+}
+
+// Auto-dismiss messages after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    document.querySelectorAll('.alert').forEach(function(alert) {
+      var bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    });
+  }, 5000);
+});
+</script>
+
+<!-- Additional Material Design 3 Styles - Minimal -->
+<style>
+/* MD3 Field Styling */
+.md-field {
+  height: 48px;
+  border: 2px solid #e8f0fe;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background: white;
+  width: 100%;
+}
+
+.md-field:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15);
+  outline: none;
+}
+
+textarea.md-field {
+  height: auto;
+  padding: 12px 16px;
+}
+
+input[type="file"].md-field {
+  padding: 10px 16px;
+  line-height: 1.5;
+  height: auto;
+}
+
+/* MD3 Card Styling */
+.md-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(25, 118, 210, 0.1);
+  overflow: hidden;
+  height: 100%;
+}
+
+.md-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(25, 118, 210, 0.1);
+  background: linear-gradient(135deg, #ffffff, #fafcff);
+}
+
+/* MD3 Tab Styling */
+.md-tabs-container {
+  background: white;
+  border-radius: 16px;
+  padding: 8px;
+  border: 1px solid rgba(25, 118, 210, 0.1);
+}
+
+.md-tab-wrapper {
+  gap: 8px;
+}
+
+.md-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 40px !important;
+  color: #64748b;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 2px solid #e8f0fe;
+  background: white;
+}
+
+.md-tab:hover {
+  background: #f0f7ff;
+  border-color: #1976d2;
+  color: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(25, 118, 210, 0.12);
+}
+
+.md-tab.active {
+  background: #1976d2 !important;
+  border-color: #1976d2 !important;
+  color: white !important;
+  box-shadow: 0 8px 16px rgba(25, 118, 210, 0.24) !important;
+  transform: translateY(-2px);
+}
+
+/* Messages Section */
+.messages-section .alert {
+  animation: slideIn 0.3s ease;
+  border: none;
+  padding: 1rem;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Preview Image Styling */
+.preview-image {
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+#svg-preview-container,
+#logo-preview-container,
+#favicon-preview-container {
+  transition: all 0.3s ease;
+}
+
+/* Button Styling */
+.md-filled-button {
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  padding: 12px 32px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.md-filled-button:hover {
+  background: #1565c0;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(25, 118, 210, 0.3);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .md-tab {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+  
+  .col-md-6 {
+    width: 100%;
+  }
+}
+</style>
+{% endblock %}

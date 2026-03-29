@@ -1,0 +1,1948 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+    <title>Dashboard - Analytics | CodespikeStudio</title>
+    <meta name="description" content="" />
+    <!-- Favicon -->
+    {% comment %} <link rel="icon" type="image/png" href="{% static 'images/favicon.jpg' %}"> {% endcomment %}
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons. Uncomment required icon fonts -->
+    <link rel="stylesheet" href="{% static 'advadmin/assets/vendor/fonts/boxicons.css' %}" />
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'advadmin/assets/vendor/css/core.css' %}" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="{% static 'advadmin/assets/vendor/css/theme-default.css' %}" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{% static 'advadmin/assets/css/demo.css' %}" />
+    <link rel="stylesheet" href="{% static 'mob-custom/theme-index.css' %}">
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{% static 'advadmin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css' %}" />
+    <link rel="stylesheet" href="{% static 'advadmin/assets/vendor/libs/apex-charts/apex-charts.css' %}" />
+    <!-- Page CSS -->
+    <!-- Helpers -->
+    <script src="{% static 'advadmin/assets/vendor/js/helpers.js' %}"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config: Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file. -->
+    <script src="{% static 'advadmin/assets/js/config.js' %}"></script>
+   
+  </head>
+  <style>
+
+/* Add this to your existing style tag */
+
+/* Force sidebar to show on all screen sizes */
+@media (min-width: 993px) {
+  .layout-menu {
+    left: 0 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: sticky !important;
+  }
+}
+
+/* Fix for tablet screens (768px to 992px) - Show sidebar by default */
+@media (min-width: 768px) and (max-width: 992px) {
+  .layout-menu {
+    left: 0 !important; /* Override the -240px */
+    position: sticky !important; /* Change from fixed to sticky */
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    box-shadow: 2px 0 20px rgba(0,0,0,0.15) !important;
+    z-index: 9999 !important;
+  }
+  
+  .layout-page {
+    width: calc(100% - 220px) !important;
+    margin-left: 0 !important;
+  }
+  
+  .layout-menu-toggle {
+    display: none !important; /* Hide toggle button when sidebar is always visible */
+  }
+  
+  .layout-overlay {
+    display: none !important; /* Hide overlay when sidebar is always visible */
+  }
+  
+  /* Adjust content padding */
+  .content-wrapper {
+    padding: 15px;
+  }
+}
+
+/* Fix for small tablets and large phones (576px to 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+  .layout-menu {
+    left: 0 !important;
+    position: sticky !important;
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .layout-page {
+    width: calc(100% - 200px) !important;
+    margin-left: 0 !important;
+  }
+  
+  .layout-menu-toggle {
+    display: none !important;
+  }
+  
+  .layout-overlay {
+    display: none !important;
+  }
+  
+  /* Adjust logo size for smaller sidebar */
+  #company-logo-svg,
+  .dot-loader {
+    width: 130px !important;
+    height: 45px !important;
+  }
+  
+  /* Adjust menu text size */
+  .menu-item .menu-link {
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+  }
+  
+  .menu-header-text {
+    font-size: 11px !important;
+  }
+  
+  .menu-icon {
+    font-size: 1.1rem !important;
+    min-width: 2rem !important;
+  }
+}
+
+/* Fix for very small phones (below 576px) */
+@media (max-width: 575px) {
+  .layout-menu {
+    left: 0 !important;
+    position: sticky !important;
+    width: 180px !important;
+    min-width: 180px !important;
+    max-width: 180px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .layout-page {
+    width: calc(100% - 180px) !important;
+    margin-left: 0 !important;
+  }
+  
+  .layout-menu-toggle {
+    display: none !important;
+  }
+  
+  .layout-overlay {
+    display: none !important;
+  }
+  
+  /* Compact sidebar for very small screens */
+  #company-logo-svg,
+  .dot-loader {
+    width: 110px !important;
+    height: 40px !important;
+  }
+  
+  .app-brand {
+    padding: 5px 0 !important;
+  }
+  
+  .menu-item .menu-link {
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+    white-space: normal !important; /* Allow text to wrap */
+    line-height: 1.2 !important;
+  }
+  
+  .menu-header-text {
+    font-size: 10px !important;
+    padding: 8px 8px 4px !important;
+  }
+  
+  .menu-icon {
+    font-size: 1rem !important;
+    min-width: 1.5rem !important;
+  }
+  
+  /* Hide secondary text to save space */
+  .menu-item .menu-link div {
+    font-size: 11px !important;
+  }
+}
+
+/* Fix for landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .layout-menu {
+    overflow-y: auto !important;
+    max-height: 100vh !important;
+  }
+  
+  .menu-inner {
+    padding-bottom: 10px !important;
+  }
+  
+  .menu-item .menu-link {
+    padding: 4px 8px !important;
+  }
+}
+
+/* Ensure content doesn't overflow */
+.layout-page {
+  min-width: 0; /* Prevents flex item from overflowing */
+  overflow-x: hidden;
+}
+
+.content-wrapper {
+  overflow-x: hidden;
+  word-wrap: break-word;
+}
+
+/* Fix card layout on small screens */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 12px !important;
+  }
+  
+  .row {
+    margin-left: -5px;
+    margin-right: -5px;
+  }
+  
+  [class*="col-"] {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  /* Stack stats cards properly */
+  .col-lg-4, .col-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Adjust welcome banner */
+  .d-flex.align-items-end.row .col-sm-7,
+  .d-flex.align-items-end.row .col-sm-5 {
+    width: 100% !important;
+    text-align: center !important;
+  }
+  
+  .d-flex.align-items-end.row img {
+    height: 100px !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* Fix for the membership overview section */
+@media (max-width: 992px) {
+  .col-md-4, .col-lg-4, .col-xl-4 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .col-md-8, .col-lg-8, .col-xl-8 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Ensure the toggle button is hidden when sidebar is always visible */
+@media (min-width: 576px) {
+  .layout-menu-toggle {
+    display: none !important;
+  }
+}
+
+/* But keep toggle button functionality for very small screens if needed */
+@media (max-width: 575px) and (orientation: portrait) {
+  /* If you want toggle functionality on very small screens, uncomment below */
+  /*
+  .layout-menu {
+    position: fixed !important;
+    left: -180px !important;
+    transition: left 0.3s ease !important;
+  }
+  
+  .layout-menu.show {
+    left: 0 !important;
+  }
+  
+  .layout-page {
+    width: 100% !important;
+  }
+  
+  .layout-menu-toggle {
+    display: block !important;
+  }
+  */
+}
+
+/* Fix chart containers */
+.apexcharts-canvas {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Improve readability on small screens */
+@media (max-width: 768px) {
+  h5.card-title {
+    font-size: 14px !important;
+  }
+  
+  .text-muted {
+    font-size: 11px !important;
+  }
+  
+  .card-title.mb-2,
+  .card-title.text-nowrap {
+    font-size: 16px !important;
+  }
+  
+  .avatar img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .bx-sm {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* Fix dropdown menus on small screens */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    min-width: 160px !important;
+    font-size: 12px !important;
+  }
+  
+  .dropdown-item {
+    padding: 6px 12px !important;
+  }
+}
+
+/* Ensure footer stays at bottom */
+.content-footer {
+  margin-top: auto;
+  width: 100%;
+}
+
+    /* Define Theme Variables */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden !important;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif !important;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    /* Layout wrapper - full height flex container */
+    .layout-wrapper {
+      height: 100vh !important;
+      width: 100%;
+      display: flex;
+      overflow: hidden !important;
+      position: relative;
+    }
+
+    .layout-container {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar - sticky and fixed */
+    .layout-menu {
+      position: sticky !important;
+      top: 0 !important;
+      left: 0 !important;
+      height: 100vh !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      flex-shrink: 0 !important;
+      width: 240px !important;
+      min-width: 240px !important;
+      max-width: 240px !important;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      z-index: 1050;
+    }
+
+    /* Fix for app brand sticky */
+    .app-brand {
+      position: sticky !important;
+      top: 0 !important;
+      {% comment %} background: white !important; {% endcomment %}
+      z-index: 1001 !important;
+      padding: 10px 0 !important;
+      border-bottom: 1px solid #f0f0f0 !important;
+    }
+
+    /* Adjust logo size */
+    #company-logo-svg,
+    .dot-loader {
+      width: 170px !important;
+      height: 55px !important;
+      margin-left: 0 !important;
+    }
+
+    /* Menu inner scroll */
+    .menu-inner {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+      padding-bottom: 20px !important;
+    }
+
+    /* Custom scrollbar for sidebar */
+    .layout-menu::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .layout-menu::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .layout-menu::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+
+    .layout-menu::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    /* Layout page - main content area */
+    .layout-page {
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100vh !important;
+      overflow: hidden !important;
+      position: relative;
+      width: calc(100% - 240px) !important;
+    }
+
+    /* Navbar - sticky at top */
+    .layout-navbar {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 1000 !important;
+      flex-shrink: 0 !important;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    /* Content wrapper - scrollable area */
+    .content-wrapper {
+      flex: 1 1 auto !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      height: calc(100vh - 60px) !important;
+      padding: 20px;
+    }
+
+    /* Custom scrollbar for content */
+    .content-wrapper::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .content-wrapper::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .content-wrapper::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 6px;
+    }
+
+    .content-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    /* Container adjustments */
+    .container-xxl {
+      max-width: 100% !important;
+      width: 100%;
+      padding-right: 15px;
+      padding-left: 15px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    /* Remove any conflicting styles */
+    .container, .container-fluid, .container-xxl, .container-xl, .container-lg, .container-md, .container-sm {
+      width: 100%;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+
+    p, span, a, button {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
+    }
+
+    /* Toast positioning fix */
+    .toast {
+      margin-top: 70px !important;
+      position: fixed !important;
+      top: 0 !important;
+      right: 20px !important;
+      z-index: 9999 !important;
+    }
+
+    .modal-backdrop {
+      background-color: transparent !important;
+    }
+
+    /* Fix for cards and content */
+    .card {
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+
+    /* Ensure footer stays at bottom */
+    .content-footer {
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+
+    .dot-loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      width: 170px !important;
+      height: 55px !important;
+    }
+
+    .dot-loader span {
+      width: 10px;
+      height: 10px;
+      background-color: #28a745;
+      border-radius: 50%;
+      animation: dotBounce 1.4s infinite ease-in-out both;
+    }
+
+    .dot-loader span:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    .dot-loader span:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+
+    .dot-loader span:nth-child(3) {
+      animation-delay: 0;
+    }
+
+    @keyframes dotBounce {
+      0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.3;
+      }
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* ===== FIXED RESPONSIVE STYLES ===== */
+    @media (max-width: 1200px) {
+      .layout-menu {
+        width: 220px !important;
+        min-width: 220px !important;
+        max-width: 220px !important;
+      }
+      .layout-page {
+        width: calc(100% - 220px) !important;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .layout-menu {
+        position: fixed !important;
+        left: -240px !important;
+        top: 0 !important;
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+        transition: left 0.3s ease !important;
+        z-index: 9999 !important;
+        box-shadow: 2px 0 20px rgba(0,0,0,0.15) !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      
+      .layout-menu.show {
+        left: 0 !important;
+      }
+      
+      .layout-page {
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
+      
+      .layout-menu-toggle {
+        display: block !important;
+        cursor: pointer !important;
+      }
+      
+      /* Overlay when sidebar is open */
+      .layout-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(0,0,0,0.5) !important;
+        z-index: 9998 !important;
+        display: none !important;
+      }
+      
+      .layout-overlay.show {
+        display: block !important;
+      }
+      
+      .content-wrapper {
+        padding: 15px;
+      }
+      
+      /* Make toggle button clickable */
+      .layout-menu-toggle a {
+        display: inline-block !important;
+        padding: 10px !important;
+        cursor: pointer !important;
+        z-index: 10000 !important;
+        position: relative !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-wrapper {
+        padding: 10px;
+      }
+      
+      .layout-navbar {
+        padding: 8px 15px;
+      }
+      
+      .layout-menu {
+        width: 220px !important;
+        min-width: 220px !important;
+        max-width: 220px !important;
+        left: -220px !important;
+      }
+      
+      #company-logo-svg,
+      .dot-loader {
+        width: 150px !important;
+        height: 50px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .layout-menu {
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
+        left: -200px !important;
+      }
+      
+      #company-logo-svg,
+      .dot-loader {
+        width: 130px !important;
+        height: 45px !important;
+      }
+      
+      .content-wrapper {
+        padding: 8px;
+      }
+    }
+
+    /* Fix for status indicator */
+    .status-indicator {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    .status-indicator.online {
+      background-color: #28a745;
+    }
+
+    .status-indicator.offline {
+      background-color: #dc3545;
+    }
+
+    /* Ensure sidebar is always on top */
+    .layout-menu {
+      z-index: 9999 !important;
+    }
+  </style>
+  
+  <!-- Toast Messages - Fixed positioning -->
+  {% if messages %}
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+    {% for message in messages %}
+    <div class="toast align-items-center text-bg-{% if message.tags == 'error' %}danger{% else %}success{% endif %} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          {{ message }}
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  
+  <body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu - Sticky Sidebar -->
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="{% url 'dashboard' %}" class="app-brand-link">
+              <span class="app-brand-logo demo m-3">
+                <!-- Dot Loader -->
+                <div id="logo-loader" class="dot-loader">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+           
+                <!-- Hidden Image (Will be shown after loading) -->
+                <img id="company-logo-svg"
+                     alt="Company Logo"
+                     style="width: 170px; height: 55px; object-fit: contain; display: none; margin-left: 0;" />
+              </span>
+            </a>
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none" onclick="toggleSidebar()">
+              <i class="bx bx-chevron-left bx-sm align-middle"></i>
+            </a>
+          </div>
+          <div class="menu-inner-shadow"></div>
+          <ul class="menu-inner py-1" style="margin-bottom: 0px;">
+          <!-- Dashboard -->
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Main {{page_name}}</span>
+          </li>
+          <li class="menu-item {% if page_name == 'dashboard' %}active{% endif %}">
+            <a href="{% url 'dashboard' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-home-circle"></i>
+              <div data-i18n="Analytics">Dashboard</div>
+            </a>
+          </li>
+          <!-- Fyers Login Link -->
+          <li class="menu-item {% if request.resolver_match.url_name == 'fyers_login' %}active{% endif %}">
+            <a href="{% url 'market_analytics:fyers_login' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-log-in-circle"></i>
+              <div data-i18n="fyers_login">FYERS Login</div>
+            </a>
+          </li>
+
+          <!-- Terminal Link -->
+          <li class="menu-item {% if page_name == 'market_analytics' %}active{% endif %}">
+            <a href="{% url 'market_analytics:terminal' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-line-chart"></i>
+              <div data-i18n="terminal">Terminal</div>
+            </a>
+          </li>
+
+          <!-- Members -->
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Member Management</span>
+          </li>
+          <li class="menu-item {% if page_name == 'member_registration' %}active{% endif %}">
+            <a href="{% url 'member_registration' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user-plus"></i>
+              <div data-i18n="All Members">New Registrations</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'user_list' %}active{% endif %}">
+            <a href="{% url 'user_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user-check"></i>
+              <div data-i18n="All Members">All Members</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'customer_list' %}active{% endif %}">
+            <a href="{% url 'customer_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user-check"></i>
+              <div data-i18n="All Customers">All Customers</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'blocked_users' %}active{% endif %}">
+            <a href="{% url 'blocked_users' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user-x"></i>
+              <div data-i18n="Blocked Users">Blocked Members</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'inactive_users' %}active{% endif %}">
+            <a href="{% url 'inactive_users' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user-x"></i>
+              <div data-i18n="Blocked Users">Inactive Members</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'riders_Users' %}active{% endif %}">
+            <a href="{% url 'staff_by_role' role='Riders' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-id-card"></i>
+              <div data-i18n="Staff Members">Manage Riders</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'vendor_admin' %}active{% endif %}">
+            <a href="{% url 'staff_by_role' role='Vendor' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-run"></i>
+              <div data-i18n="Manage Vendor">Manage Vendor</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'vendor_admin' %}active{% endif %}">
+            <a href="{% url 'staff_by_role' role='Trader' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-run"></i>
+              <div data-i18n="Manage Trader">Manage Trader</div>
+            </a>
+          </li>
+
+          <li class="menu-item {% if page_name == 'manage_vendor' %}active{% endif %}">
+            <a href="{% url 'vendor_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-shield-quarter"></i>
+              <div data-i18n="Roles & Permissions">Manage Stall</div>
+            </a>
+          </li>
+          <!-- Accounts Management -->
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">ACCOUNTS</span>
+          </li>
+          <li class="menu-item {% if page_name == 'income_transactions' %}active{% endif %}">
+            <a href="{% url 'orders:transaction_list' 'income' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-trending-up"></i>
+              <div data-i18n="Income Transactions">Income Transactions</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'expense_transactions' %}active{% endif %}">
+            <a href="{% url 'orders:transaction_list' 'expense' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-trending-down"></i>
+              <div data-i18n="Expense Transactions">Expense Transactions</div>
+            </a>
+          </li>
+          <!-- Events Section -->
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Wedding Management</span>
+          </li>
+
+          <!-- Home -->
+          <li class="menu-item {% if page_name == 'home' %}active{% endif %}">
+            <a href="{% url 'events:home' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-home"></i>
+              <div data-i18n="Home">Home</div>
+            </a>
+          </li>
+
+          <!-- Events -->
+          <li class="menu-item {% if page_name == 'events' %}active{% endif %}">
+            <a href="{% url 'events:events' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-calendar"></i>
+              <div>Events</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'event_create' %}active{% endif %}">
+            <a href="{% url 'events:event_create' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-plus"></i>
+              <div>Add Event</div>
+            </a>
+          </li>
+
+          <!-- Couple -->
+          <li class="menu-item {% if page_name == 'couple_list' %}active{% endif %}">
+            <a href="{% url 'events:couple_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-heart"></i>
+              <div>Couple</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'couple_create' %}active{% endif %}">
+            <a href="{% url 'events:couple_create' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user-plus"></i>
+              <div>Add Couple</div>
+            </a>
+          </li>
+
+          <!-- Wedding Party -->
+          <li class="menu-item {% if page_name == 'wedding_party_list' %}active{% endif %}">
+            <a href="{% url 'events:wedding_party_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-group"></i>
+              <div>Wedding Party</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'wedding_party_create' %}active{% endif %}">
+            <a href="{% url 'events:wedding_party_create' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user-plus"></i>
+              <div>Add Member</div>
+            </a>
+          </li>
+
+          <!-- Gallery -->
+          <li class="menu-item {% if page_name == 'gallery' %}active{% endif %}">
+            <a href="{% url 'events:gallery' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-images"></i>
+              <div>Gallery</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'gallery_create' %}active{% endif %}">
+            <a href="{% url 'events:gallery_create' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-image-add"></i>
+              <div>Add Photo</div>
+            </a>
+          </li>
+
+          <!-- RSVP & Registry -->
+          <li class="menu-item {% if page_name == 'rsvp' %}active{% endif %}">
+            <a href="{% url 'events:rsvp' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-check-circle"></i>
+              <div>RSVP</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'registry' %}active{% endif %}">
+            <a href="{% url 'events:registry' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-gift"></i>
+              <div>Registry</div>
+            </a>
+          </li>
+
+          <li class="menu-item {% if page_name == 'banners' %}active{% endif %}">
+              <a href="{% url 'events:banner_list' %}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-image-alt"></i>
+                  <div>Event Banners</div>
+              </a>
+          </li>
+
+          <!-- Category & Product Management -->
+          <li class="menu-item {% if page_name == 'category_list' %}active{% endif %}">
+            <a href="{% url 'master:category_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-category"></i>
+              <div data-i18n="Manage Category">Manage Category</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'subcategory_list' %}active{% endif %}">
+            <a href="{% url 'master:subcategory_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-list-ul"></i>
+              <div data-i18n="Manage Subcategory">Manage Subcategory</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'product_list' %}active{% endif %}">
+            <a href="{% url 'master:product_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-package"></i>
+              <div data-i18n="Manage Products">Manage Products</div>
+            </a>
+          </li>
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">E Commerce</span>
+          </li>
+          <!-- Orders & Transactions -->
+          <li class="menu-item {% if page_name == 'orders' %}active{% endif %}">
+            <a href="{% url 'ecommerce:order_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-cart"></i>
+              <div data-i18n="Orders">Orders</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'transactions' %}active{% endif %}">
+            <a href="{% url 'orders:transaction_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-credit-card"></i>
+              <div data-i18n="Transactions">Transactions</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'invoices' %}active{% endif %}">
+            <a href="{% url 'ecommerce:invoice_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-file"></i>
+              <div data-i18n="Invoices">Invoices</div>
+            </a>
+          </li>
+
+          <!-- Customer & Inventory Details -->
+          <li class="menu-item {% if page_name == 'customer_addresses' %}active{% endif %}">
+            <a href="{% url 'ecommerce:customer_address_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-map"></i>
+              <div data-i18n="Customer Addresses">Customer Addresses</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'carts' %}active{% endif %}">
+            <a href="{% url 'ecommerce:cart_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-shopping-bag"></i>
+              <div data-i18n="Carts">Carts</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'wishlists' %}active{% endif %}">
+            <a href="{% url 'ecommerce:wishlist_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-heart"></i>
+              <div data-i18n="Wishlists">Wishlists</div>
+            </a>
+          </li>
+
+          {% if request.user.is_superuser %}
+          <!-- Administration -->
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">MAKRETING</span>
+          </li>
+          <li class="menu-item {% if page_name == 'banner_list' %}active{% endif %}">
+            <a href="{% url 'banner_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-cog"></i>
+              <div data-i18n="Manage Banner">Manage Banner</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'review_list' %}active{% endif %}">
+            <a href="{% url 'review_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-cog"></i>
+              <div data-i18n="Settings">Manage Review</div>
+            </a>
+          </li>
+          <!-- Communication -->
+          <li class="menu-item {% if page_name == 'notifications' %}active{% endif %}">
+            <a href="{% url 'notification_log_list' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-bell"></i>
+              <div data-i18n="Notifications">Notifications</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'email_sms' %}active{% endif %}">
+            <a href="#" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-envelope"></i>
+              <div data-i18n="Email & SMS">Email & SMS</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'settings' %}active{% endif %}">
+            <a href="#" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-cog"></i>
+              <div data-i18n="Settings">Settings</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'system_logs' %}active{% endif %}">
+            <a href="#" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-file-find"></i>
+              <div data-i18n="System Logs">System Logs</div>
+            </a>
+          </li>
+          <!-- Backups -->
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Master Settings</span>
+          </li>
+          <li class="menu-item {% if page_name == 'backup' %}active{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-download"></i>
+              <div data-i18n="Backups">BACK UP</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item {% if page_name == 'db_backup' %}active{% endif %}">
+                <a href="{% url 'download_database' %}" class="menu-link">
+                  <div data-i18n="Database Backup">DB Backup</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'media_backup' %}active{% endif %}">
+                <a href="{% url 'download_all_media' %}" class="menu-link"
+                  onclick="return confirm('This will download all media files as a ZIP archive. Continue?')">
+                  <div data-i18n="Media Backup">Download All Media</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="menu-item {% if page_name == 'system_reset' %}active{% endif %}">
+            <a href="{% url 'system_reset' %}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-support"></i>
+              <div data-i18n="System Reset">System Reset</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'account_settings' %}active{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-dock-top"></i>
+              <div data-i18n="Account Settings">Account Settings</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item {% if page_name == 'account' %}active{% endif %}">
+                <a href="pages-account-settings-account.html" class="menu-link">
+                  <div data-i18n="Account">Account</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'account_notifications' %}active{% endif %}">
+                <a href="pages-account-settings-notifications.html" class="menu-link">
+                  <div data-i18n="Notifications">Notifications</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'account_connections' %}active{% endif %}">
+                <a href="pages-account-settings-connections.html" class="menu-link">
+                  <div data-i18n="Connections">Connections</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="menu-item {% if page_name == 'authentications' %}active{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+              <div data-i18n="Authentications">Authentications</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item {% if page_name == 'auth_login' %}active{% endif %}">
+                <a href="auth-login-basic.html" class="menu-link" target="_blank">
+                  <div data-i18n="Basic">Login</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'auth_register' %}active{% endif %}">
+                <a href="auth-register-basic.html" class="menu-link" target="_blank">
+                  <div data-i18n="Basic">Register</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'auth_forgot_password' %}active{% endif %}">
+                <a href="auth-forgot-password-basic.html" class="menu-link" target="_blank">
+                  <div data-i18n="Basic">Forgot Password</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="menu-item {% if page_name == 'ecommerce' %}active{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-cart-alt"></i>
+              <div data-i18n="E-commerce">E-commerce</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item {% if page_name == 'orders' %}active{% endif %}">
+                <a href="{% url 'ecommerce:order_list' %}" class="menu-link">
+                  <div data-i18n="Orders">Orders</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'customer_addresses' %}active{% endif %}">
+                <a href="{% url 'ecommerce:customer_address_list' %}" class="menu-link">
+                  <div data-i18n="Customer Addresses">Customer Addresses</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'carts' %}active{% endif %}">
+                <a href="{% url 'ecommerce:cart_list' %}" class="menu-link">
+                  <div data-i18n="Carts">Carts</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'wishlists' %}active{% endif %}">
+                <a href="{% url 'ecommerce:wishlist_list' %}" class="menu-link">
+                  <div data-i18n="Wishlists">Wishlists</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'order_items' %}active{% endif %}">
+                <a href="{% url 'ecommerce:order_item_list' %}" class="menu-link">
+                  <div data-i18n="Order Items">Order Items</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'transactions' %}active{% endif %}">
+                <a href="{% url 'orders:transaction_list' %}" class="menu-link">
+                  <div data-i18n="Transactions">Transactions</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'invoices' %}active{% endif %}">
+                <a href="{% url 'ecommerce:invoice_list' %}" class="menu-link">
+                  <div data-i18n="Invoices">Invoices</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'order_status_history' %}active{% endif %}">
+                <a href="{% url 'ecommerce:order_status_history_list' %}" class="menu-link">
+                  <div data-i18n="Order Status History">Order Status History</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="menu-item {% if page_name == 'misc' %}active{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-cube-alt"></i>
+              <div data-i18n="Misc">Misc</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item {% if page_name == 'misc_error' %}active{% endif %}">
+                <a href="pages-misc-error.html" class="menu-link">
+                  <div data-i18n="Error">Error</div>
+                </a>
+              </li>
+              <li class="menu-item {% if page_name == 'misc_under_maintenance' %}active{% endif %}">
+                <a href="pages-misc-under-maintenance.html" class="menu-link">
+                  <div data-i18n="Under Maintenance">Under Maintenance</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <!-- Misc -->
+          <li class="menu-header small text-uppercase"><span class="menu-header-text">Misc</span></li>
+          <li class="menu-item {% if page_name == 'support' %}active{% endif %}">
+            <a href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
+              target="_blank"
+              class="menu-link">
+              <i class="menu-icon tf-icons bx bx-support"></i>
+              <div data-i18n="Support">Support</div>
+            </a>
+          </li>
+          <li class="menu-item {% if page_name == 'documentation' %}active{% endif %}">
+            <a href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/"
+              target="_blank"
+              class="menu-link">
+              <i class="menu-icon tf-icons bx bx-file"></i>
+              <div data-i18n="Documentation">Documentation</div>
+            </a>
+          </li>
+          {% endif %}
+          </ul>
+        </aside>
+        <!-- / Menu -->
+        
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar - Sticky -->
+          <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme sticky-top" id="layout-navbar">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)" onclick="event.stopPropagation(); toggleSidebar(); return false;">
+                    <i class="bx bx-menu bx-sm"></i>
+                </a>
+            </div>
+            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+              <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <li class="nav-item lh-1 me-3">
+                  <a class="dropdown-item" href="{% url 'home' %}">
+                    <i class="bx bx-home me-2"></i>
+                    <span class="align-middle">Home</span>
+                  </a>
+                </li>
+                <!-- User -->
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="avatar avatar-online" style="position: relative; display: inline-block;">
+                      <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'advadmin/assets/img/avatars/default-avatar.png' %}{% endif %}"
+                           class="rounded-circle border border-2"
+                           style="width: 40px; height: 40px; object-fit: cover;">
+                      <span class="status-indicator {% if user.is_active %}online{% else %}offline{% endif %}"></span>
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a class="dropdown-item" href="#">
+                        <div class="d-flex">
+                          <div class="flex-shrink-0 me-3">
+                            <div class="avatar avatar-online">
+                              <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'advadmin/assets/img/avatars/default-avatar.png' %}{% endif %}"
+                                   class="rounded-circle border border-2"
+                                   style="width: 40px; height: 40px; object-fit: cover;">
+                            </div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <span class="fw-semibold d-block">{{request.user.first_name}} {{request.user.last_name}}</span>
+                            <small class="text-muted">{{user.staff_role}}</small>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="{% url 'home' %}">
+                        <i class="bx bx-home me-2"></i>
+                        <span class="align-middle">Home</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="{% url 'account_settings' %}">
+                        <i class="bx bx-user me-2"></i>
+                        <span class="align-middle">My Profile</span>
+                      </a>
+                    </li>
+                    {% if request.user.is_superuser %}
+                    <li>
+                      <a class="dropdown-item" href="{% url 'business_details' %}">
+                        <i class="bx bx-cog me-2"></i>
+                        <span class="align-middle">Settings</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="{% url 'configuration_list' %}">
+                        <span class="d-flex align-items-center align-middle">
+                          <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
+                          <span class="flex-grow-1 align-middle">Website Settings</span>
+                        </span>
+                      </a>
+                    </li>
+                    {% endif %}
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="{% url 'logout' %}">
+                        <i class="bx bx-power-off me-2"></i>
+                        <span class="align-middle">Log Out</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ User -->
+              </ul>
+            </div>
+          </nav>
+          <!-- / Navbar -->
+          
+          <!-- Content wrapper - ONLY THIS IS SCROLLABLE -->
+          {% block content %}
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <div class="col-lg-12 mb-4 order-0">
+                  <div class="card">
+                    <div class="d-flex align-items-end row">
+                      <div class="col-sm-7">
+                        <div class="card-body">
+                          <h5 class="card-title text-primary">Welcome back, {{request.user.first_name}} {{request.user.last_name}}! 🎉</h5>
+                          <p class="mb-4">
+                            {{new_signups_today}} new signups today, <span class="fw-bold">{{attendance_rate}}%</span> attendance rate,</br> 2 expiring memberships.
+                          </p>
+                          <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a>
+                        </div>
+                      </div>
+                      <div class="col-sm-5 text-center text-sm-left">
+                        <div class="card-body pb-0 px-0 px-md-4">
+                          <img
+                            src="{% static 'advadmin/assets/img/illustratippons/man-with-laptop-light.png' %}"
+                            height="140"
+                            alt="View Badge User"
+                            data-app-dark-img="illustrations/man-with-laptop-dark.png' %}"
+                            data-app-light-img="illustrations/man-with-laptop-light.png' %}"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-12 col-md-12 order-1">
+                  <div class="row">
+                    <!-- Profit Card -->
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                              <img
+                                src="{% static 'advadmin/assets/img/icons/unicons/chart-success.png' %}"
+                                alt="Profit"
+                                class="rounded"
+                              />
+                            </div>
+                            <div class="dropdown">
+                              <button
+                                class="btn p-0"
+                                type="button"
+                                id="cardOpt3"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                              >
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt3">
+                                <a class="dropdown-item" href="{% url 'user_list' %}">View More</a>
+                              </div>
+                            </div>
+                          </div>
+                          <span class="fw-semibold d-block mb-1"> Active Members</span>
+                          <h5 class="card-title mb-2">{{active_users_count}}</h5>
+                          <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i>Subscriptions</small>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Total Sales Card -->
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                              <img
+                                src="{% static 'advadmin/assets/img/icons/unicons/wallet-info.png' %}"
+                                alt="Sales"
+                                class="rounded"
+                              />
+                            </div>
+                            <div class="dropdown">
+                              <button
+                                class="btn p-0"
+                                type="button"
+                                id="cardOpt6"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                              >
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt6">
+                                <a class="dropdown-item" href="{% url 'orders:transaction_list' 'income' %}">View More</a>
+                              </div>
+                            </div>
+                          </div>
+                          <span class="fw-semibold d-block mb-1">Current Month Revenue</span>
+                          <h5 class="card-title text-nowrap mb-1">{{ current_month_income|floatformat:2 }} INR</h5>
+                          <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> {{current_month}}</small>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Completed Payments -->
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                              <img src="{% static 'advadmin/assets/img/icons/unicons/paypal.png' %}" alt="Completed Payments" class="rounded" />
+                            </div>
+                            <div class="dropdown">
+                              <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt4">
+                                <a class="dropdown-item" href="javascript:void(0);">View More</a>
+                              </div>
+                            </div>
+                          </div>
+                          <span class="fw-semibold d-block mb-1">Total Members</span>
+                          <h5 class="card-title text-nowrap mb-2">{{ total_members}}</h5>
+                          <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> Completed</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-12 col-md-12 order-1">
+                  <div class="row">
+                    <!-- Upcoming Dues -->
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                              <img src="{% static 'advadmin/assets/img/icons/unicons/cc-primary.png' %}" alt="Transactions" class="rounded" />
+                            </div>
+                            <div class="dropdown">
+                              <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt1">
+                                <a class="dropdown-item" href="{% url 'upcoming_renewal_members' %}">View More</a>
+                              </div>
+                            </div>
+                          </div>
+                          <span class="fw-semibold d-block mb-1">Upcoming Renewals</span>
+                          <h5 class="card-title mb-2">₹ {{upcoming_renewals_amount|floatformat:2}} INR - {{ upcoming_renewals_count }}</h5>
+                          <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i>Renewals</small>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Pending Dues -->
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                              <img src="{% static 'advadmin/assets/img/icons/unicons/paypal.png' %}" alt="Completed Payments" class="rounded" />
+                            </div>
+                            <div class="dropdown">
+                              <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt4">
+                                <a class="dropdown-item" href="javascript:void(0);">View More</a>
+                              </div>
+                            </div>
+                          </div>
+                          <span class="fw-semibold d-block mb-1">Pending Renewals</span>
+                          <h5 class="card-title text-nowrap mb-2">₹ {{ pending_dues_amount|floatformat:2 }} INR - {{pending_dues_count}} </h5>
+                          <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i>Follow Up</small>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Payment Done -->
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                              <img src="{% static 'advadmin/assets/img/icons/unicons/cc-primary.png' %}" alt="Transactions" class="rounded" />
+                            </div>
+                            <div class="dropdown">
+                              <button class="btn p-0" type="button" id="cardOpt2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt2">
+                                <a class="dropdown-item" href="{% url 'payment_list' %}">View More</a>
+                              </div>
+                            </div>
+                          </div>
+                          <span class="fw-semibold d-block mb-1">Payment Done</span>
+                          <h5 class="card-title mb-2">₹ {{ current_month_income|floatformat:2 }} INR </h5>
+                          <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i>Transactions</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row">
+                <!-- Membership & Subscription Overview -->
+                <div class="col-md-4 col-lg-4 col-xl-4 mb-4">
+                  <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                      <div class="card-title mb-0">
+                        <h5 class="m-0 me-2 pb-2">Membership & Subscription Overview</h5>
+                        <small class="text-muted">{{ total_members }} Total Members</small>
+                      </div>
+                      <div class="dropdown">
+                        <button
+                          class="btn p-0"
+                          type="button"
+                          id="membershipOverviewDropdown"
+                          data-bs-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
+                          <i class="bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="membershipOverviewDropdown">
+                          <a class="dropdown-item" href="#">Refresh</a>
+                          <a class="dropdown-item" href="#">View Reports</a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex flex-column align-items-center gap-1">
+                          <h2 class="mb-2">{{ active_users_count }}</h2>
+                          <span>Active Members</span>
+                        </div>
+                        <div class="text-end">
+                          <small class="text-muted">Revenue this month</small>
+                          <h6 class="mb-0 text-success">₹{{ current_month_income }}</h6>
+                        </div>
+                      </div>
+                      <ul class="p-0 m-0">
+                        <li class="d-flex mb-4 pb-1">
+                          <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-success"><i class="bx bx-check-circle"></i></span>
+                          </div>
+                          <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                              <h6 class="mb-0">Active Subscriptions</h6>
+                              <small class="text-muted">Currently subscribed</small>
+                            </div>
+                            <div class="user-progress">
+                              <small class="fw-semibold">{{ active_users_count }}</small>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="d-flex mb-4 pb-1">
+                          <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-info"><i class="bx bx-user-plus"></i></span>
+                          </div>
+                          <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                              <h6 class="mb-0">New Signups Today</h6>
+                              <small class="text-muted">Joined on {{ today|date:"M d" }}</small>
+                            </div>
+                            <div class="user-progress">
+                              <small class="fw-semibold">{{ new_signups_today }}</small>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="d-flex mb-4 pb-1">
+                          <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-warning"><i class="bx bx-timer"></i></span>
+                          </div>
+                          <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                              <h6 class="mb-0">Upcoming Renewals</h6>
+                              <small class="text-muted">Due by month-end</small>
+                            </div>
+                            <div class="user-progress">
+                              <small class="fw-semibold">{{ upcoming_renewals_count }}</small>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="d-flex mb-4 pb-1">
+                          <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-danger"><i class="bx bx-credit-card"></i></span>
+                          </div>
+                          <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                              <h6 class="mb-0">Pending Dues</h6>
+                              <small class="text-muted">Not renewed this month</small>
+                            </div>
+                            <div class="user-progress">
+                              <small class="fw-semibold">{{ pending_dues_count }}</small>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="d-flex">
+                          <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-secondary"><i class="bx bx-user-x"></i></span>
+                          </div>
+                          <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                              <h6 class="mb-0">Expired Memberships</h6>
+                              <small class="text-muted">Need follow-up</small>
+                            </div>
+                            <div class="user-progress">
+                              <small class="fw-semibold">{{ expired_members_count }}</small>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <!-- Revenue - Monthly Overview -->
+                <div class="col-md-8 col-lg-8 col-xl-8 mb-4">
+                  <div class="card h-100">
+                    <div class="card-header">
+                      <ul class="nav nav-pills" role="tablist">
+                        <h5 class="m-0 me-2">Revenue - Monthly Overview</h5>
+                      </ul>
+                    </div>
+                    <div class="card-body px-0">
+                      <div class="tab-content p-0">
+                        <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
+                          <div class="d-flex p-4 pt-3 align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                              <div class="avatar flex-shrink-0 me-3">
+                                <img src="{% static 'advadmin/assets/img/icons/unicons/wallet.png' %}" alt="Wallet" />
+                              </div>
+                              <div>
+                                <small class="text-muted d-block">Total Revenue (YTD)</small>
+                                <div class="d-flex align-items-center">
+                                  <h6 class="mb-0 me-1" id="incomeBalanceAmount">₹0</h6>
+                                  <small class="text-success fw-semibold" id="incomeBalanceChange">
+                                    <i class="bx bx-chevron-up"></i>
+                                    <span>0%</span>
+                                  </small>
+                                </div>
+                                <small class="text-muted">Year:
+                                  <span id="incomeYearLabel">{{ current_year }}</span>
+                                  <span class="dropdown">
+                                    <a href="#" class="text-primary dropdown-toggle year-select-dropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:0.9em;">
+                                      <i class="bx bx-calendar"></i>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                      {% for y in years %}
+                                        <li><a class="dropdown-item year-select" href="#" data-year="{{ y }}">{{ y }}</a></li>
+                                      {% endfor %}
+                                    </ul>
+                                  </span>
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="px-1">
+                            <div id="incomeChart"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Running Class Activities Overview -->
+              <div class="col-md-12 col-lg-12 order-2 mb-4">
+                <div class="card h-100">
+                  <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title m-0 me-2">Running Class Activities Overview {{years}}</h5>
+                  </div>
+                  <div class="card-body">
+                    <ul class="p-0 m-0">
+                      {% for class in running_classes %}
+                      <li class="d-flex mb-4 pb-1">
+                        <div class="avatar flex-shrink-0 me-3">
+                          <img src="{% static 'advadmin/assets/img/icons/unicons/chart.png' %}" alt="{{ class.class_name }}" class="rounded" />
+                        </div>
+                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                          <div class="me-2">
+                            <small class="text-muted d-block mb-1">{{ class.class_name }} - {{ class.location }}</small>
+                            <h6 class="mb-0">Trainer: {{ class.trainer_name }}</h6>
+                            <small class="text-muted">{{ class.start_time|time:"h:i A" }} - {{ class.end_time|time:"h:i A" }}</small>
+                          </div>
+                          <div class="user-progress d-flex align-items-center gap-1">
+                            <h6 class="mb-0">{{ class.current_attendance }}/{{ class.max_capacity }}</h6>
+                            <span class="text-muted">Attending</span>
+                          </div>
+                        </div>
+                      </li>
+                      {% empty %}
+                      <li class="text-center text-muted">No live classes right now.</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <script>
+              // For income chart etc.
+              window.monthlyRevenue = {{ monthly_revenue_json|safe }};
+              window.currentYear = {{ current_year }};
+              // For growth progress chart:
+            </script>
+            <!-- / Content -->
+            {% endblock %}
+            
+            <!-- Footer -->
+            <style>
+            /* Minimal fix to keep footer at bottom */
+            html, body {
+              height: 100%;
+              margin: 0;
+              padding: 0;
+            }
+
+            .content-wrapper {
+              min-height: calc(100vh - 130px); /* Adjust based on your header/footer height */
+              display: flex;
+              flex-direction: column;
+            }
+
+            .container-p-y {
+              flex: 1 0 auto;
+            }
+
+            .content-footer {
+              flex-shrink: 0;
+              width: 100%;
+              background: white;
+              border-top: 1px solid rgba(25, 118, 210, 0.1);
+              margin-top: auto;
+            }
+            </style>
+
+            <!-- Your existing footer - no changes needed -->
+            <footer class="content-footer footer bg-footer-theme">
+              <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                <div class="mb-2 mb-md-0">
+                  ©
+                  <script>
+                    document.write(new Date().getFullYear());
+                  </script>
+                  , made with ❤️ by
+                  <a href="https://themeselection.com" target="_blank" class="footer-link fw-bolder">CodespikeStudio</a>
+                </div>
+              </div>
+            </footer>
+            <!-- / Footer -->
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle" onclick="toggleSidebar()"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script>
+      const orderStatsData = {
+        labels: [
+          'Pending',
+          'Processing',
+          'Shipped',
+          'Delivered'
+        ],
+        series: [
+          {{ pending_orders|default:0 }},
+          {{ processing_orders|default:0 }},
+          {{ shipped_orders|default:0 }},
+          {{ delivered_orders|default:0 }}
+        ]
+      };
+    </script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const logoImg = document.getElementById('company-logo-svg');
+        const loader = document.getElementById('logo-loader');
+        const faviconLink = document.querySelector("link[rel~='icon']");
+        const overlay = document.querySelector('.layout-overlay');
+        
+        // Set initial styles
+        if (logoImg) {
+          logoImg.style.width = '170px';
+          logoImg.style.height = '55px';
+        }
+   
+        fetch('/api/company-data/')
+          .then(response => response.json())
+          .then(data => {
+            console.log("Company Data:", data);
+   
+            // Load the company logo
+            if (data.company_logo_svg_url) {
+              logoImg.src = data.company_logo_svg_url;
+              logoImg.alt = data.company_name + " Logo";
+              logoImg.style.display = "block";
+              logoImg.style.width = "170px";
+              logoImg.style.height = "55px";
+              if (loader) loader.style.display = "none";
+            } else {
+              if (loader) loader.innerHTML = "Logo";
+            }
+   
+            // Load the favicon dynamically
+            if (faviconLink && data.company_favicon_url) {
+              faviconLink.href = data.company_favicon_url;
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching company data:', error);
+            if (loader) loader.innerHTML = "CSS";
+          });
+
+        // Handle responsive layout
+        function handleResponsive() {
+          const menu = document.querySelector('.layout-menu');
+          if (window.innerWidth <= 992) {
+            menu.classList.remove('show');
+            if (overlay) overlay.classList.remove('show');
+          }
+        }
+
+        window.addEventListener('resize', handleResponsive);
+        handleResponsive();
+      });
+
+      // Function to toggle sidebar on mobile
+      function toggleSidebar() {
+          const menu = document.querySelector('.layout-menu');
+          const overlay = document.querySelector('.layout-overlay');
+          menu.classList.toggle('show');
+          if (overlay) overlay.classList.toggle('show');
+      }
+
+      // Debounce flag to prevent multiple triggers
+      let clickTimer = null;
+
+      // Close sidebar when clicking on overlay
+      document.addEventListener('click', function(e) {
+          const menu = document.querySelector('.layout-menu');
+          const toggleBtn = document.querySelector('.layout-menu-toggle a');
+          const overlay = document.querySelector('.layout-overlay');
+          
+          if (window.innerWidth <= 992) {
+              if (menu && menu.classList.contains('show')) {
+                  // Clear any existing timer
+                  if (clickTimer) clearTimeout(clickTimer);
+                  
+                  // Check if click is NOT on menu AND NOT on toggle button
+                  if (!menu.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+                      // Small delay to ensure toggle button click completes first
+                      clickTimer = setTimeout(function() {
+                          menu.classList.remove('show');
+                          if (overlay) overlay.classList.remove('show');
+                          clickTimer = null;
+                      }, 10);
+                  }
+              }
+          }
+      });
+    </script>
+    
+    {% block extra_js %}
+    <script>
+        window.membershipTrends = {{ membership_trends_json|safe }};
+        window.yearlyEarnings = {{ yearly_earnings_json|safe }};
+        window.allYears = {{ years|safe }};
+        window.currentYear = {{ current_year }};
+        
+        document.querySelectorAll('.year-select').forEach(item => {
+          item.addEventListener('click', function(e) {
+            e.preventDefault();
+            var selectedYear = parseInt(this.getAttribute('data-year'));
+            var lastYear = selectedYear - 1;
+            var trends = window.membershipTrends;
+            var earnings = window.yearlyEarnings;
+            
+            // Update chart series
+            var newSeries = [
+              {
+                name: String(selectedYear),
+                data: trends[selectedYear] || Array(12).fill(0)
+              },
+              {
+                name: String(lastYear),
+                data: trends[lastYear] || Array(12).fill(0)
+              }
+            ];
+            
+            if (window.totalRevenueChart) {
+              window.totalRevenueChart.updateSeries(newSeries);
+            }
+            
+            // Update labels/amounts
+            document.getElementById('thisYearLabel').innerText = selectedYear;
+            document.getElementById('lastYearLabel').innerText = lastYear;
+            document.getElementById('thisYearEarning').innerText = "₹" + (earnings[selectedYear] || 0).toLocaleString();
+            document.getElementById('lastYearEarning').innerText = "₹" + (earnings[lastYear] || 0).toLocaleString();
+            document.getElementById('growthReportId').innerText = selectedYear;
+          });
+        });
+    </script>
+    
+    <script src="{% static 'advadmin/assets/vendor/libs/jquery/jquery.js' %}"></script>
+    <script src="{% static 'advadmin/assets/vendor/libs/popper/popper.js' %}"></script>
+    <script src="{% static 'advadmin/assets/vendor/js/bootstrap.js' %}"></script>
+    <script src="{% static 'advadmin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'advadmin/assets/vendor/js/menu.js' %}"></script>
+    <!-- endbuild -->
+    
+    <!-- Vendors JS -->
+    <script src="{% static 'advadmin/assets/vendor/libs/apex-charts/apexcharts.js' %}"></script>
+    
+    <!-- Main JS -->
+    <script src="{% static 'advadmin/assets/js/main.js' %}"></script>
+    
+    <!-- Page JS -->
+    <script src="{% static 'advadmin/assets/js/dashboards-analytics.js' %}"></script>
+    
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js' %}"></script>
+    {% endblock %}
+  </body>
+</html>

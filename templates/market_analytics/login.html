@@ -1,0 +1,32 @@
+{% extends 'advadmin/index.html' %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh; background: #131722;">
+    <div class="card bg-dark text-white border-secondary shadow-lg" style="width: 450px;">
+        <div class="card-body p-5 text-center">
+            <div class="mb-4">
+                <i class='bx bxs-analyse text-primary' style="font-size: 4rem;"></i>
+            </div>
+            <h3 class="fw-bold">Market Analytics</h3>
+            <p class="text-muted">Connect your Fyers account to access live TPO Analysis and NIFTY Volume Calculation.</p>
+            
+            <hr class="border-secondary my-4">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} small">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <a href="{% url 'market_analytics:fyers_login' %}" class="btn btn-primary btn-lg w-100 py-3 shadow">
+                <i class='bx bxs-zap me-2'></i> Connect Fyers API
+            </a>
+            
+            <div class="mt-4 small text-muted">
+                <i class='bx bx-lock-alt'></i> Secure OAuth 2.0 Connection
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

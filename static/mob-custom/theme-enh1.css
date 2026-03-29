@@ -1,0 +1,214 @@
+/* ========================================
+   THEME-ENH1.CSS - MEMBER FORM + CHECKBOXES
+   Material Design 3 - Compact Version (~90% scale)
+   ======================================== */
+
+/* Header - more compact */
+.md-header {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.9) 100%);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(25, 118, 210, 0.1);
+  border-radius: 20px;
+  padding: 16px;                /* was 20px → reduced */
+  margin-bottom: 1.5rem;        /* was 2.5rem → reduced */
+  box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+}
+
+.md-title {
+  font-size: clamp(18px, 4.5vw, 28px) !important;  /* smaller max size */
+  font-weight: 700;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.4rem;
+}
+
+.md-subtitle {
+  font-size: 13px !important;   /* was 16px → compact */
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Cards - compact */
+.md-card {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  border: 1px solid rgba(25, 118, 210, 0.1);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+  margin-bottom: 1rem;          /* tighter vertical spacing */
+}
+
+.md-card-header {
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.04) 0%, transparent 100%);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 24px 12px;      /* reduced padding */
+  border-bottom: 1px solid rgba(25, 118, 210, 0.08);
+}
+
+/* Fields - compact */
+.md-field, .form-control.md-field, input.form-control, select.form-control, textarea.form-control {
+  border: 1.5px solid #e8f0fe !important;
+  border-radius: 14px !important;
+  padding: 14px 18px !important;   /* was 20px 24px → smaller */
+  background: white !important;
+  color: #0f172a !important;
+  font-size: 14px !important;      /* was 16px → compact */
+  height: 52px !important;         /* was 64px → shorter */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+  transition: all 0.25s ease;
+  width: 100% !important;
+}
+
+.md-field:focus, .form-control.md-field:focus, input.form-control:focus, 
+select.form-control:focus, textarea.form-control:focus {
+  border-color: #1976d2 !important;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12) !important;
+  background: #fafbff !important;
+  transform: translateY(-1px) !important;
+}
+
+.md-field::placeholder, .form-control::placeholder {
+  color: #94a3b8 !important;
+  font-size: 13px !important;
+}
+
+.md-field-label {
+  color: #1a202c !important;
+  font-size: 13px !important;      /* was 15px → smaller */
+  font-weight: 600 !important;
+  margin-bottom: 6px !important;   /* tighter */
+}
+
+/* PERFECT MATERIAL DESIGN 3 CHECKBOXES - compact */
+.md-checkbox-wrapper {
+  padding: 12px 0;                 /* was 16px */
+}
+
+.checkbox-container {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  margin-right: 12px;
+  height: 20px;
+  width: 20px;
+}
+
+.md-checkbox-checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background: #fafbff;
+  border: 2px solid #e8f0fe;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+
+.checkbox-container input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-container input[type="checkbox"]:checked ~ .md-checkbox-checkmark {
+  background: #1976d2 !important;
+  border-color: #1976d2 !important;
+  transform: scale(0.95);
+}
+
+.checkbox-container input[type="checkbox"]:checked ~ .md-checkbox-checkmark::after {
+  content: '✔';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-container:hover .md-checkbox-checkmark {
+  border-color: #1976d2;
+  background: rgba(25, 118, 210, 0.08);
+}
+
+.md-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  font-weight: 500;
+  color: #1a202c;
+  font-size: 13px !important;      /* was 15px */
+  line-height: 1.4;
+  margin-left: 10px;
+}
+
+.checkbox-text {
+  margin-left: 8px;
+}
+
+/* Error states */
+.is-invalid {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+
+/* Divider - compact */
+.md-divider {
+  margin: 32px 0 !important;       /* was 48px */
+}
+
+.divider-text {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+/* Buttons - compact */
+.md-filled-button {
+  padding: 12px 28px !important;
+  font-size: 14px !important;
+  min-height: 44px !important;
+}
+
+.md-outlined-button {
+  padding: 12px 24px !important;
+  font-size: 14px !important;
+}
+
+/* Responsive - even tighter on mobile */
+@media (max-width: 768px) {
+  .md-field, input.form-control, select.form-control {
+    padding: 12px 16px !important;
+    height: 48px !important;
+    font-size: 13px !important;
+  }
+
+  .md-checkbox-wrapper {
+    padding: 10px 0;
+  }
+
+  .md-card-header {
+    padding: 14px 20px 10px !important;
+  }
+
+  .md-title {
+    font-size: 24px !important;
+  }
+
+  .md-filled-button {
+    padding: 10px 24px !important;
+    font-size: 13px !important;
+  }
+}

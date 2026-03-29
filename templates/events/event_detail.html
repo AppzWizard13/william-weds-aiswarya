@@ -1,0 +1,234 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Header with Back Button -->
+    <div class="d-flex justify-content-between align-items-center mb-5 pb-4 border-bottom" 
+         style="border-color: rgba(0,0,0,0.08);">
+      <a href="{% url 'events:events' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2 shadow-sm">
+        <i class="bx bx-arrow-back me-2"></i>Back to Events
+      </a>
+      <div class="text-center flex-grow-1">
+        <h1 class="mb-1 fw-bold fs-3" style="color: var(--md-sys-color-on-surface);">
+          {{ event.title }}
+        </h1>
+        <p class="mb-0 text-muted fs-6">{{ event.date|date:"EEEE, MMMM d, yyyy" }} • {{ event.time|time:"h:mm a" }}</p>
+      </div>
+      <a href="/admin/events/event/{{ event.pk }}/update/" class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm">
+        <i class="bx bx-edit me-2"></i>Edit
+      </a>
+    </div>
+
+    <div class="row g-5">
+      
+      <!-- Main Event Details Card -->
+      <div class="col-lg-8">
+        <div class="md-card h-100">
+          <div class="p-5">
+            <!-- Event Icon & Title -->
+            <div class="d-flex align-items-center gap-4 mb-5 pb-4 border-bottom" style="border-color: rgba(0,0,0,0.08);">
+              {% if event.icon %}
+              <div class="event-icon-wrapper bg-primary bg-opacity-10 p-4 rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <i class="{{ event.icon }} fs-2 text-primary"></i>
+              </div>
+              {% endif %}
+              <div>
+                <h2 class="mb-2 fw-bold fs-2" style="color: var(--md-sys-color-on-surface);">{{ event.title }}</h2>
+                <div class="d-flex align-items-center gap-4 text-muted">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bx bx-calendar"></i>
+                    {{ event.date|date:"MMM d, yyyy" }}
+                  </span>
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bx bx-time"></i>
+                    {{ event.time|time:"h:mm a" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Location & Description -->
+            <div class="row g-4 mb-5">
+              <div class="col-md-6">
+                <div class="md-location-card p-4 rounded-3 shadow-sm" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid rgba(59, 130, 246, 0.2);">
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-primary bg-opacity-20 p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                      <i class="bx bx-map-pin fs-5 text-primary"></i>
+                    </div>
+                    <h6 class="mb-0 fw-semibold" style="color: var(--md-sys-color-on-surface);">Venue</h6>
+                  </div>
+                  <h5 class="fw-bold mb-2" style="color: var(--md-sys-color-on-surface);">{{ event.location }}</h5>
+                  <button class="btn btn-outline-primary btn-sm rounded-pill px-4">
+                    <i class="bx bx-map me-2"></i>Get Directions
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-4 rounded-3 shadow-sm" style="background: #f8fafc; border: 1px solid rgba(0,0,0,0.05);">
+                  <h6 class="fw-semibold mb-3 text-muted">Event Details</h6>
+                  <div class="text-muted" style="line-height: 1.7;">{{ event.description|linebreaks|truncatewords:50 }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="d-flex gap-3 flex-wrap">
+              <a href="{% url 'events:rsvp' %}" class="btn btn-primary rounded-pill px-5 py-3 fw-semibold shadow-lg">
+                <i class="bx bx-check-circle me-2"></i>RSVP Now
+              </a>
+              <button class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-semibold">
+                <i class="bx bx-share-alt me-2"></i>Add to Calendar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar - Add Remaining Models -->
+      <div class="col-lg-4">
+        
+        <!-- Wedding Party Quick Add -->
+        <div class="md-card mb-4">
+          <div class="p-4 border-bottom" style="border-color: rgba(0,0,0,0.08);">
+            <h5 class="fw-bold mb-0" style="color: var(--md-sys-color-on-surface);">Wedding Party</h5>
+          </div>
+          <div class="p-4">
+            <a href="/admin/events/weddingparty/add/" class="btn btn-outline-primary w-100 rounded-pill py-3 mb-3 fw-semibold">
+              <i class="bx bx-user-plus me-2"></i>Add Wedding Party Member
+            </a>
+            <a href="/admin/events/weddingparty/" class="btn btn-outline-secondary w-100 rounded-pill py-3 fw-semibold">
+              <i class="bx bx-group me-2"></i>View All Members
+            </a>
+          </div>
+        </div>
+
+        <!-- Gallery Quick Add -->
+        <div class="md-card mb-4">
+          <div class="p-4 border-bottom" style="border-color: rgba(0,0,0,0.08);">
+            <h5 class="fw-bold mb-0" style="color: var(--md-sys-color-on-surface);">Photo Gallery</h5>
+          </div>
+          <div class="p-4">
+            <a href="/admin/events/galleryimage/add/" class="btn btn-outline-success w-100 rounded-pill py-3 mb-3 fw-semibold">
+              <i class="bx bx-image-add me-2"></i>Add Gallery Image
+            </a>
+            <a href="{% url 'events:gallery' %}" class="btn btn-outline-secondary w-100 rounded-pill py-3 fw-semibold">
+              <i class="bx bx-images me-2"></i>View Gallery
+            </a>
+          </div>
+        </div>
+
+        <!-- RSVP Stats -->
+        <div class="md-card">
+          <div class="p-4 text-center">
+            <div class="mb-4">
+              <i class="bx bx-check-shield fs-1 text-success"></i>
+            </div>
+            <h3 class="fw-bold mb-2" style="color: var(--md-sys-color-on-surface);">RSVP</h3>
+            <p class="text-muted mb-4">Manage guest responses</p>
+            <a href="{% url 'events:rsvp' %}" class="btn btn-success w-100 rounded-pill py-3 fw-semibold shadow-lg">
+              <i class="bx bx-edit me-2"></i>View RSVPs
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Event Detail Perfect Styling */
+.md-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.md-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+}
+
+.event-icon-wrapper {
+  transition: all 0.3s ease;
+}
+
+.event-icon-wrapper:hover {
+  transform: scale(1.1);
+  background: rgba(59, 130, 246, 0.2) !important;
+}
+
+.md-location-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.md-location-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(59, 130, 246, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .row.g-5 > [class*="col-"] {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .md-card {
+    margin: 0 1rem;
+  }
+  
+  .d-flex.justify-content-between {
+    flex-direction: column !important;
+    gap: 1.5rem;
+    text-align: center;
+  }
+}
+</style>
+
+<script>
+// Event detail interactions
+document.addEventListener('DOMContentLoaded', function() {
+  // Smooth scroll to top on page load
+  window.scrollTo(0, 0);
+  
+  // Copy to clipboard for location
+  const locationBtn = document.querySelector('.md-location-card');
+  if (locationBtn) {
+    locationBtn.addEventListener('click', function() {
+      navigator.clipboard.writeText('{{ event.location }}');
+      const btn = this.querySelector('button');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="bx bx-check"></i> Copied!';
+      btn.classList.add('btn-success');
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove('btn-success');
+      }, 2000);
+    });
+  }
+});
+</script>
+
+{% endblock %}

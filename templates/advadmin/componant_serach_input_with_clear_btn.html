@@ -1,0 +1,42 @@
+              <div class="position-relative">
+                <input type="text" name="q" class="form-control md-search ps-0 pe-5" 
+                      placeholder="Search by name, username, phone..." value="{{ request.GET.q }}">
+                {% if request.GET.q %}
+                <a href="{% url 'user_list' %}" class="btn position-absolute end-0 top-50 translate-middle-y rounded-circle p-0 border-0 d-flex align-items-center justify-content-center me-2" 
+                  style="width: 36px; height: 36px; background: #f8fafc;">
+                  <i class="bx bx-x text-muted fs-5"></i>
+                </a>
+                {% endif %}
+              </div>
+
+              <!-- Add this minimal CSS if needed -->
+              <style>
+              .md-search {
+                height: 48px;
+                border: 2px solid #e8f0fe;
+                border-radius: 12px;
+                padding-left: 16px;
+                font-size: 0.95rem;
+                transition: all 0.2s ease;
+              }
+
+              .md-search:focus {
+                border-color: #1976d2;
+                box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
+                outline: none;
+              }
+
+              /* For the clear button */
+              .position-relative .btn {
+                right: 8px;
+                z-index: 5;
+              }
+
+              .position-relative .btn:hover {
+                background: #fee2e2 !important;
+              }
+
+              .position-relative .btn:hover i {
+                color: #dc2626 !important;
+              }
+              </style>

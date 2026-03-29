@@ -1,0 +1,135 @@
+{% extends 'myoceanbasket/index.html' %}
+{% block content %}
+{% load static %}
+
+<section class="py-5 py-md-5">
+    <div class="container-fluid">
+        <div class="rounded-5 py-4 py-md-5"
+             style="background: linear-gradient(135deg, #0d6efd, #0056b3),
+                    url('{% static 'mob/images/bg-leaves-img-pattern.png' %}') no-repeat center/cover;">
+            <div class="container">
+                <div class="row align-items-center">
+
+                    <!-- Login Form - comes FIRST on mobile -->
+                    <!-- Login Form - comes FIRST on mobile -->
+                    <div class="col-md-6 p-4 p-md-5 order-first order-md-2">
+                        <!-- Login Form with glassmorphism + animation -->
+                        <form method="post" class="bg-white bg-opacity-10 backdrop-blur-lg p-4 p-md-5 rounded-4 shadow-lg border-opacity-60 animate__animated animate__fadeInUp"
+                              style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                            {% csrf_token %}
+                            <h3 class="text-center mb-4 fw-bold text-white">Login</h3>
+
+                            <!-- Phone Number Field -->
+                            <div class="mb-4">
+                                <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold text-white">{{ form.username.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white bg-opacity-25 text-white border-0 rounded-start-pill">+91</span>
+                                    {{ form.username }}
+                                </div>
+                                {% if form.username.errors %}
+                                    <small class="text-danger d-block mt-1">{{ form.username.errors.0 }}</small>
+                                {% endif %}
+                                <small class="text-white opacity-75 d-block mt-1">We'll send order updates on WhatsApp</small>
+                            </div>
+
+                            <!-- Password Field -->
+                            <div class="mb-4">
+                                <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold text-white">{{ form.password.label }}</label>
+                                {{ form.password }}
+                                {% if form.password.errors %}
+                                    <small class="text-danger d-block mt-1">{{ form.password.errors.0 }}</small>
+                                {% endif %}
+                            </div>
+
+                            <!-- Forgot Password Link -->
+                            <div class="text-end mb-4">
+                                <a href="#" class="text-white small text-decoration-none opacity-85 hover-opacity-100">Forgot password?</a>
+                            </div>
+
+                            <!-- Login Button -->
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="submit" class="btn btn-dark btn-lg py-3 fw-semibold rounded-pill shadow transition-all hover-scale-105">
+                                    🔐 Login to My Account
+                                </button>
+                            </div>
+
+                            <!-- Non-field Errors (e.g. Invalid Login) -->
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger bg-danger bg-opacity-25 text-white border-0 small">
+                                    {{ form.non_field_errors.0 }}
+                                </div>
+                            {% endif %}
+
+                            <!-- Divider -->
+                            <div class="position-relative my-4">
+                                <hr class="text-white opacity-50">
+                                <span class="position-absolute top-50 start-50 translate-middle bg-transparent px-3 text-white small opacity-75">OR</span>
+                            </div>
+
+                            <!-- OTP Login Option -->
+                            <div class="d-grid gap-2 mb-4">
+                                <a href="#" class="btn btn-outline-light btn-lg py-3 rounded-pill transition-all hover-bg-white hover-text-dark">
+                                    📱 Login with OTP
+                                </a>
+                            </div>
+
+                            <!-- Seller Login -->
+                            <div class="text-center mt-4">
+                                <small>
+                                    <a href="#" class="text-white opacity-75 text-decoration-underline hover-opacity-100">Are you a seller? Login here →</a>
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+
+
+                    <!-- Welcome Text + Features - comes SECOND on mobile -->
+                    <div class="col-md-6 p-4 p-md-5 text-white order-md-1">
+                        <div class="section-header">
+                            <h2 class="section-title display-4">Welcome <span class="text-warning">Back!</span></h2>
+                        </div>
+                        <p class="mb-4 lead">Login to order fresh seafood from the Arabian Sea. Fresh catch, delivered to your doorstep.</p>
+
+                        <!-- Features List -->
+                        <div class="mt-4 mt-md-5">
+                            <h5 class="fw-bold mb-3">Why MyOceanBasket?</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-3 d-flex align-items-start">
+                                    <span class="text-warning me-3 fs-4">🐟</span>
+                                    <div>
+                                        <strong>Direct from Fishermen</strong>
+                                        <p class="small mb-0 opacity-75">No middlemen, best prices</p>
+                                    </div>
+                                </li>
+                                <li class="mb-3 d-flex align-items-start">
+                                    <span class="text-warning me-3 fs-4">🛒</span>
+                                    <div>
+                                        <strong>Free Delivery</strong>
+                                        <p class="small mb-0 opacity-75">On orders above ₹499</p>
+                                    </div>
+                                </li>
+                                <li class="mb-3 d-flex align-items-start">
+                                    <span class="text-warning me-3 fs-4">⏰</span>
+                                    <div>
+                                        <strong>Early Morning Catch</strong>
+                                        <p class="small mb-0 opacity-75">Order before 8 AM for same day delivery</p>
+                                    </div>
+                                </li>
+                                <li class="mb-3 d-flex align-items-start">
+                                    <span class="text-warning me-3 fs-4">💎</span>
+                                    <div>
+                                        <strong>Premium Quality</strong>
+                                        <p class="small mb-0 opacity-75">100% fresh, never frozen</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

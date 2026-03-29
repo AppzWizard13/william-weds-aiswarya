@@ -1,0 +1,300 @@
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
+from django.db import models
+from django.conf import settings
+from django.utils.timezone import now
+
+from core.choices import GenderChoice  , SocialMediaChoice, StaffRoleChoice
+from products.models import Package  # Fix the NameError issue
+
+
+# users/models.py
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
+from django.db import models
+from django.conf import settings
+from django.core.validators import FileExtensionValidator
+from django_multitenant.models import TenantModelMixin       # Import the Vendor (tenant) model
+from products.models import Package
+from django.db import models
+from django.conf import settings
+
+
+from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
+from django.core.validators import FileExtensionValidator
+from django_countries.fields import CountryField
+
+# Multitenant Imports
+from django_multitenant.mixins import TenantModelMixin
+from django_multitenant.models import TenantManager
+from django_multitenant.fields import TenantForeignKey
+from django.utils import timezone
+
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
+
+class Vendor(models.Model):
+    # Core fields - nullable for migration safety
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='vendor_profile',
+        null=True,  # Allow null for existing records
+        blank=True
+    )
+    shop_name = models.CharField(max_length=200, blank=True, default='')
+    shop_description = models.TextField(blank=True, default='')
+    shop_logo = models.ImageField(upload_to='vendors/logos/', blank=True, null=True)
+    phone = models.CharField(max_length=15, blank=True, default='')
+    email = models.EmailField(blank=True, default='')
+    
+    # Address - all optional
+    address = models.TextField(blank=True, default='')
+    city = models.CharField(max_length=100, blank=True, default='')
+    state = models.CharField(max_length=100, blank=True, default='')
+    pincode = models.CharField(max_length=10, blank=True, default='')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    
+    # Business details - optional
+    gstin = models.CharField(max_length=15, blank=True, default='')
+    pan = models.CharField(max_length=10, blank=True, default='')
+    
+    # Status
+    is_active = models.BooleanField(default=True)
+    
+    # Timestamps - nullable for migration
+    created_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return self.shop_name or f'Vendor {self.id}'
+
+class CustomUserManager(TenantManager, BaseUserManager):
+    def create_user(self, phone_number, password=None, **extra_fields):
+        if not phone_number:
+            raise ValueError("The Phone Number field must be set")
+        extra_fields.pop("username", None)
+        extra_fields.setdefault("is_active", True)
+        user = self.model(phone_number=phone_number, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, phone_number, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        return self.create_user(phone_number, password, **extra_fields)
+
+class CustomUser(AbstractUser, TenantModelMixin):
+    # Multitenant Configuration
+    # 1. tenant_id must match the field name + _id
+    tenant_id = "vendor_id" 
+    
+    username = models.CharField(max_length=20, unique=True, blank=True, null=True)  
+    country_code = CountryField(blank_label="(Select country)", blank=True, null=True)
+    phone_number = models.CharField(max_length=10, unique=True)
+    member_id = models.BigAutoField(primary_key=True)  
+    join_date = models.DateField(auto_now_add=True)
+    package_expiry_date = models.DateField(null=True)
+
+    staff_role = models.CharField(max_length=100, choices=StaffRoleChoice.choices)
+    email = models.EmailField(unique=True)
+    address = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    pincode = models.CharField(max_length=10, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=GenderChoice.choices  , blank=True, null=True)
+
+    app_id = models.CharField(max_length=100, blank=True, null=True)
+    secret_id = models.CharField(max_length=100, blank=True, null=True)
+
+    profile_image = models.ImageField(
+        upload_to='profile_pics/', 
+        blank=True, null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])]
+    )
+    
+    # 2. Changed 'Vendor' to 'vendor' (Lowercase) to satisfy django-multitenant scan
+    vendor = TenantForeignKey(Vendor, on_delete=models.CASCADE, related_name='users', null=True, blank=True)
+    
+    # 3. Reference the lowercase field name here
+    multitenant_shared_fields = ["vendor"]
+
+    package = models.ForeignKey('products.Package', null=True, blank=True, on_delete=models.SET_NULL)
+    is_active = models.BooleanField(default=True)
+    on_subscription = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+
+    groups = models.ManyToManyField(Group, related_name="customuser_set", blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name="customuser_permissions_set", blank=True)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'phone_number'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            super().save(*args, **kwargs)
+            self.username = f"MEMBER{str(self.member_id).zfill(5)}"
+            kwargs['force_insert'] = False
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.phone_number})"
+
+
+
+
+class Review(models.Model):
+    customer_name = models.CharField(max_length=255)
+    review_rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # 1 to 5 rating
+    review_content = models.TextField()
+    review_date = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return f"{self.customer_name} - {self.review_rating} Stars"
+
+
+class Banner(models.Model):
+    name = models.CharField(max_length=255)
+    series = models.IntegerField()
+    image = models.ImageField(upload_to='banners/')
+
+    # New fields for text content
+    tagline = models.CharField(max_length=255, blank=True, help_text="E.g. SHAPE YOUR BODY")
+    title_main = models.CharField(max_length=255, help_text="E.g. BE")
+    title_highlight = models.CharField(max_length=255, help_text="E.g. STRONG")
+    subtitle = models.CharField(max_length=255, help_text="E.g. TRAINING HARD")
+    button_text = models.CharField(max_length=100, blank=True, default='Get Info')
+
+    def __str__(self):
+        return self.name
+
+
+from django.db import models
+from django.conf import settings
+from django.contrib.auth import get_user_model
+import random
+import string
+from django.utils import timezone
+from datetime import timedelta
+
+User = get_user_model()
+
+class PasswordResetOTP(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Only on creation
+            self.otp = ''.join(random.choices(string.digits, k=6))
+            self.expires_at = timezone.now() + timedelta(minutes=15)
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        return not self.is_used and timezone.now() < self.expires_at
+    
+
+
+from django.db import models
+from django.conf import settings
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class SocialMedia(models.Model):
+
+    platform = models.CharField(
+        max_length=20,
+        choices=SocialMediaChoice.choices,
+        verbose_name='Social Media Platform'
+    )
+    url = models.CharField(
+        max_length=255,  # Changed from URLField to CharField
+        verbose_name='Link or Phone Number'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='social_media',
+        verbose_name='User'
+    )
+    is_active = models.BooleanField(default=True, verbose_name='Is Active')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Social Media Link'
+        verbose_name_plural = 'Social Media Links'
+        ordering = ['platform']
+
+    def __str__(self):
+        return f"{self.get_platform_display()} - {self.user.username}"
+    
+
+from django.db import models
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.utils.crypto import get_random_string
+
+CustomUser = get_user_model()
+
+class Customer(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Changed to ForeignKey
+    phone = models.CharField(max_length=20, blank=True)
+    shipping_address = models.TextField(blank=True)
+    billing_address = models.TextField(blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    loyalty_points = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    country = models.CharField(max_length=100, blank=True)
+    pincode = models.CharField(max_length=10, blank=True)
+    customer_username = models.CharField(max_length=150, unique=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Customer'
+        verbose_name_plural = 'Customers'
+
+    def save(self, *args, **kwargs):
+        if not self.customer_username:
+            self.customer_username = self.generate_unique_username()
+        super().save(*args, **kwargs)
+
+    def generate_unique_username(self):
+        base_username = "CUST"
+        while True:
+            random_string = get_random_string(length=5, allowed_chars='0123456789')
+            username = f"{base_username}{random_string}"
+            if not Customer.objects.filter(customer_username=username).exists():
+                return username
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.user.email})"
+    
+class MonthlyMembershipTrend(models.Model):
+    Vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='membership_trends')
+    year = models.PositiveIntegerField()
+    month = models.PositiveIntegerField()
+    member_count = models.PositiveIntegerField()
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('Vendor', 'year', 'month')
+        ordering = ['-year', '-month']
+
+    def __str__(self):
+        return f"{self.Vendor} {self.year}-{self.month}: {self.member_count}"

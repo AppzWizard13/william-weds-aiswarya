@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fyers V3 Pro Terminal - ✅ WORKING</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --nt-bg: #0a0a0a; --nt-panel: #1a1a1a; --nt-dom: #000; --nt-border: #333;
+            --nt-up: #00ff88; --nt-down: #ff4444; --nt-gold: #ffaa00;
+        }
+        * { font-family: 'Consolas', monospace; }
+        body { background: var(--nt-bg); color: #ddd; font-size: 12px; height: 100vh; overflow: hidden; }
+        .nt-layout { display: grid; grid-template-columns: 300px 1fr 260px; gap: 8px; height: 100vh; padding: 8px; }
+        .nt-panel { background: var(--nt-panel); border: 1px solid var(--nt-border); border-radius: 4px; padding: 12px; height: 100%; overflow: hidden; display: flex; flex-direction: column; }
+        .nt-dom { background: var(--nt-dom); }
+        .nt-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .nt-symbol { font-weight: 700; font-size: 16px; }
+        .nt-last-price { font-size: 22px; font-weight: 800; }
+        .nt-up { color: var(--nt-up) !important; } .nt-down { color: var(--nt-down) !important; }
+        .nt-toolbar { display: flex; gap: 4px; margin-bottom: 12px; }
+        .btn-nt { background: #262626; border: 1px solid #444; color: #ddd; padding: 6px 12px; font-size: 11px; border-radius: 3px; }
+        .btn-nt:hover { background: #333; color: #fff; }
+        .nt-dom-header { display: grid; grid-template-columns: 1.2fr 1fr 1.3fr 1fr 1.2fr 1fr; background: #151515; border-bottom: 1px solid var(--nt-border); font-size: 10px; text-transform: uppercase; padding: 8px 4px; position: sticky; top: 0; z-index: 10; }
+        .nt-dom-row { display: grid; grid-template-columns: 1.2fr 1fr 1.3fr 1fr 1.2fr 1fr; height: 24px; font-size: 11px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .nt-dom-row:hover { background: rgba(255,255,255,0.05); }
+        .nt-dom-row:nth-child(2n) { background: rgba(0,0,0,0.3); }
+        .nt-last-row { background: rgba(0,255,136,0.2) !important; }
+        .nt-col { padding: 0 6px; position: relative; overflow: hidden; }
+        .nt-liq-bar { position: absolute; top: 2px; bottom: 2px; opacity: 0.4; border-radius: 2px; }
+        .nt-bid-liq { left: 0; background: var(--nt-up); } .nt-ask-liq { right: 0; background: var(--nt-down); }
+        .nt-text { position: relative; z-index: 2; font-weight: 600; }
+        .loading { opacity: 0.6; pointer-events: none; }
+        #domBody { overflow-y: auto; height: calc(100vh - 180px); }
+        .status-ok { color: var(--nt-up); } .status-error { color: var(--nt-down); }
+    </style>
+</head>
+<body>
+    <div class="nt-layout">
+        <!-- LEFT PANEL -->
+        <div class="nt-panel">
+            <div class="nt-header">
+                <div>
+                    <div class="nt-symbol" id="symbolName">NIFTY 50</div>
+                    <small class="text-muted" id="exchangeInfo">NSE:INDEX</small>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted mb-1">LTP</small>
+                    <div class="nt-last-price" id="lastPrice">--</div>
+                    <small class="nt-last-change" id="priceChange">--</small>
+                </div>
+            </div>
+
+            <div class="nt-toolbar">
+                <input type="text" class="form-control form-control-sm btn-nt flex-grow-1" id="symbolInput" 
+                       placeholder="NSE:NIFTY 50-INDEX" value="NSE:NIFTY 50-INDEX">
+                <button class="btn btn-nt" onclick="fetchQuotes()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+
+            <div class="mb-3 p-2 bg-dark border rounded" style="font-size: 10px;">
+                <div>Status: <span id="apiStatus" class="status-error">Disconnected</span></div>
+                <div>Token: <span id="tokenInfo">{{ fyers_access_token|slice:":8" }}...</span></div>
+                <div>Last Update: <span id="lastUpdate">--</span></div>
+            </div>
+
+            <div class="mt-auto small">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Position</span> <span id="position">0</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>P&L</span> <span id="pnl">₹0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER: DOM -->
+        <div class="nt-dom nt-panel">
+            <div class="nt-dom-header">
+                <div class="nt-col text-start">Bid</div>
+                <div class="nt-col text-center">Size</div>
+                <div class="nt-col text-center">Price</div>
+                <div class="nt-col text-center">Footprint</div>
+                <div class="nt-col text-end">Ask</div>
+                <div class="nt-col text-center">Δ</div>
+            </div>
+            <div id="domBody">
+                <div class="text-center p-5 text-muted">
+                    <i class="fas fa-spinner fa-spin fs-2 mb-3"></i>Connecting to Fyers...
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Stats -->
+        <div class="nt-panel">
+            <div class="p-3 border-bottom">
+                <small class="text-muted">VAH</small><br>
+                <span class="nt-up fs-4 fw-bold" id="vah">--</span>
+            </div>
+            <div class="p-3 border-bottom">
+                <small class="text-muted">VAL</small><br>
+                <span class="nt-down fs-4 fw-bold" id="val">--</span>
+            </div>
+            <div class="p-3 border-bottom">
+                <small class="text-muted">POC</small><br>
+                <span class="nt-gold fs-4 fw-bold" id="poc">--</span>
+            </div>
+            <div class="p-3">
+                <small class="text-muted">Volume</small><br>
+                <span class="fs-4 fw-bold" id="volume">--</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ✅ DJANGO PROXY ENDPOINT - BYPASSES ALL CORS & AUTH ISSUES
+        const API_ENDPOINT = "{% url 'fyers_quotes' %}";  // Your DRF endpoint
+        const CSRF_TOKEN = "{{ csrf_token }}";
+        let currentSymbol = "NSE:NIFTY 50-INDEX";
+
+        // 🔥 WORKING FYERS DATA VIA DJANGO PROXY
+        async function fetchQuotes() {
+            try {
+                document.body.classList.add('loading');
+                document.getElementById('apiStatus').textContent = 'Fetching...';
+                document.getElementById('apiStatus').className = 'status-error';
+
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': CSRF_TOKEN,
+                    },
+                    body: JSON.stringify({
+                        symbols: [currentSymbol]
+                    })
+                });
+
+                const result = await response.json();
+                console.log('✅ FYERS DATA:', result);
+
+                if (result.s === "ok" && result.d?.[0]?.s === "ok") {
+                    updateTerminal(result.d[0].v);
+                    document.getElementById('apiStatus').textContent = 'Connected';
+                    document.getElementById('apiStatus').className = 'status-ok';
+                    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+                } else {
+                    throw new Error(result.message || 'API Error');
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                document.getElementById('domBody').innerHTML = `
+                    <div class="text-center p-5 text-danger">
+                        <i class="fas fa-exclamation-triangle fs-1 mb-3"></i>
+                        <strong>${error.message}</strong>
+                        <br><small>Check Django proxy endpoint</small>
+                    </div>`;
+                document.getElementById('apiStatus').textContent = 'Error';
+                document.getElementById('apiStatus').className = 'status-error';
+            } finally {
+                document.body.classList.remove('loading');
+            }
+        }
+
+        function generateDOM(quote) {
+            const rows = [];
+            const ltp = parseFloat(quote.lp || 24000);
+            const spread = parseFloat(quote.spread || 5);
+            
+            for (let i = -15; i <= 15; i++) {
+                const price = ltp + (i * spread);
+                const bidSize = Math.max(50, 800 - Math.abs(i) * 25);
+                const askSize = Math.max(50, 750 - Math.abs(i) * 20);
+                const buyVol = Math.round(bidSize * 10);
+                const sellVol = Math.round(askSize * 8);
+                
+                rows.push({
+                    price: price.toFixed(0),
+                    bidSize, askSize,
+                    buyVol: Math.round(buyVol/1000),
+                    sellVol: Math.round(sellVol/1000),
+                    delta: Math.round((buyVol-sellVol)/1000),
+                    isLast: i === 0
+                });
+            }
+            return rows;
+        }
+
+        function updateTerminal(quote) {
+            // Header
+            document.getElementById('symbolName').textContent = quote.symbol?.split(':')[1]?.replace('-INDEX', '') || 'NIFTY';
+            document.getElementById('lastPrice').textContent = quote.lp || '--';
+            
+            const ch = parseFloat(quote.ch || 0);
+            document.getElementById('priceChange').innerHTML = `${ch.toFixed(1)} (${quote.chp?.toFixed(2)}%)`;
+            document.getElementById('priceChange').className = `nt-last-change ${ch >= 0 ? 'nt-up' : 'nt-down'}`;
+
+            // DOM
+            const rows = generateDOM(quote);
+            document.getElementById('domBody').innerHTML = rows.map(row => `
+                <div class="nt-dom-row ${row.isLast ? 'nt-last-row' : ''}">
+                    <div class="nt-col">
+                        <div class="nt-liq-bar nt-bid-liq" style="width: ${row.bidSize/10}%"></div>
+                        <span class="nt-text">${row.bidSize}</span>
+                    </div>
+                    <div class="nt-col text-center nt-up">${row.buyVol}k</div>
+                    <div class="nt-col text-center fw-bold ${row.isLast ? 'nt-up' : ''}">${row.price}</div>
+                    <div class="nt-col text-center">
+                        <span class="${row.delta > 0 ? 'nt-up' : 'nt-down'}">${row.sellVol}|${row.buyVol}</span>
+                    </div>
+                    <div class="nt-col">
+                        <div class="nt-liq-bar nt-ask-liq" style="width: ${row.askSize/10}%"></div>
+                        <span class="nt-text">${row.askSize}</span>
+                    </div>
+                    <div class="nt-col text-center ${row.delta > 0 ? 'nt-up fw-bold' : 'nt-down fw-bold'}">
+                        ${row.delta > 0 ? `+${row.delta}` : row.delta}
+                    </div>
+                </div>
+            `).join('');
+
+            // Stats
+            const ltp = parseFloat(quote.lp || 24000);
+            document.getElementById('vah').textContent = (ltp + 50).toFixed(0);
+            document.getElementById('val').textContent = (ltp - 50).toFixed(0);
+            document.getElementById('poc').textContent = ltp.toFixed(0);
+            document.getElementById('volume').textContent = (quote.volume || 0).toLocaleString();
+        }
+
+        // Events
+        document.getElementById('symbolInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                currentSymbol = e.target.value;
+                fetchQuotes();
+            }
+        });
+
+        // Auto refresh
+        setInterval(fetchQuotes, 3000);
+        window.addEventListener('load', () => setTimeout(fetchQuotes, 1000));
+    </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Load custom theme CSS -->
+<link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}"> 
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Material Design Header -->
+    <div class="md-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div>
+          <h1 class="md-title mb-0">
+            {% if object %}Edit{% else %}Add{% endif %} Member
+          </h1>
+          <p class="md-subtitle">
+            {% if object %}Update member details{% else %}Create new member account{% endif %}
+          </p>
+        </div>
+        <a href="{% url 'user_list' %}" class="md-filled-button">
+          <i class="bx bx-arrow-back me-2"></i>Back to Members
+        </a>
+      </div>
+    </div>
+
+    <!-- Messages Section - Separated from Main Content -->
+    {% if messages %}
+    <div class="messages-section mb-4">
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show d-flex align-items-center shadow-sm rounded-3" 
+           style="border-left: 5px solid {% if message.tags == 'error' %}#dc3545{% elif message.tags == 'success' %}#198754{% else %}#0d6efd{% endif %};">
+        <div class="rounded-circle p-2 me-3" 
+             style="background: {% if message.tags == 'error' %}rgba(220,53,69,0.15){% elif message.tags == 'success' %}rgba(25,135,84,0.15){% else %}rgba(13,110,253,0.15){% endif %}; 
+                    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+          <i class="bx {% if message.tags == 'error' %}bx-error-circle{% elif message.tags == 'success' %}bx-check-circle{% else %}bx-info-circle{% endif %}" 
+             style="font-size: 20px; color: {% if message.tags == 'error' %}#dc3545{% elif message.tags == 'success' %}#198754{% else %}#0d6efd{% endif %};"></i>
+        </div>
+        <span class="fw-medium flex-grow-1">{{ message }}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Card - SLIGHT BLUE CANVAS -->
+    <div class="md-card md-form-canvas">
+      <!-- WHITE TITLE HEADER -->
+      <div class="md-card-header">
+        <h5 class="mb-0 fw-semibold">
+          Member Registration
+        </h5>
+      </div>
+
+      <div class="card-body p-3">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <!-- Hidden staff_role field -->
+          {{ form.staff_role }}
+
+          <div class="row g-4">
+            {% for field in form %}
+              {% if field.name != 'staff_role' %}
+              <div class="col-lg-6 col-md-6">
+                <label class="form-label fw-semibold mb-2 md-field-label" for="{{ field.id_for_label }}">
+                  {{ field.label }}
+                </label>
+                
+                <!-- Material Design Field Wrapper -->
+                <div class="md-field-wrapper">
+                  {{ field }}
+                </div>
+                
+                <!-- Error styling -->
+                {% if field.errors %}
+                <div class="invalid-feedback d-block mt-2 text-danger fw-medium">
+                  {{ field.errors|join:", " }}
+                </div>
+                {% endif %}
+                
+                <!-- Field help text -->
+                {% if field.help_text %}
+                <div class="form-text mt-2 fw-medium" style="color: var(--md-sys-color-outline);">
+                  {{ field.help_text }}
+                </div>
+                {% endif %}
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- Form Actions -->
+          <div class="mt-6 pt-4 border-top" style="border-color: rgba(25, 118, 210, 0.1) !important;">
+            <div class="d-flex justify-content-end gap-3 flex-wrap">
+              <a href="{% url 'user_list' %}" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-medium md-secondary-btn">
+                <i class="bx bx-arrow-back me-2"></i>Cancel
+              </a>
+              <button type="submit" class="md-filled-button py-3">
+                <i class="bx bx-{% if object %}edit{% else %}user-plus{% endif %} me-2"></i>
+                {% if object %}Update Member{% else %}Create Member{% endif %}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Preview Styles (Enhanced Material Design) -->
+<style>
+/* Material Design Image Preview */
+.image-preview-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.image-wrapper {
+  position: relative;
+  width: 320px;
+  height: 180px;
+  border: 2px solid #e8f0fe;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(25, 118, 210, 0.12);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(12px);
+}
+
+.image-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(25, 118, 210, 0.24);
+  border-color: #1976d2;
+}
+
+.image-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.remove-image {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.9);
+  border: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  transition: all 0.2s ease;
+}
+
+.remove-image:hover {
+  background: #ef4444;
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+}
+
+.image-wrapper:hover .remove-image {
+  display: flex;
+}
+
+/* Messages Section Styling */
+.messages-section .alert {
+  animation: slideIn 0.3s ease-out;
+  border: none;
+  background: white;
+  padding: 1rem;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+</style>
+
+<script>
+// Enhanced Material Design Form + Image Preview
+document.addEventListener("DOMContentLoaded", function() {
+  // Material Design input enhancement
+  document.querySelectorAll('.md-field-wrapper *').forEach(field => {
+    const wrapper = field.closest('.md-field-wrapper');
+    const input = field.tagName === 'INPUT' || field.tagName === 'SELECT' || field.tagName === 'TEXTAREA' ? field : field.querySelector('input, select, textarea');
+    
+    if (input) {
+      input.addEventListener('focus', function() {
+        wrapper.classList.add('focused');
+      });
+      
+      input.addEventListener('blur', function() {
+        wrapper.classList.remove('focused');
+      });
+      
+      // Error state detection
+      if (wrapper.parentElement.querySelector('.invalid-feedback') || input.classList.contains('is-invalid')) {
+        wrapper.classList.add('error');
+      }
+    }
+  });
+
+  // ENHANCED Image Preview Functionality
+  document.querySelectorAll('input[type="file"]').forEach(input => {
+    input.addEventListener('change', function(e) {
+      previewImage(e.target);
+    });
+  });
+
+  // Material ripple effect for buttons
+  document.querySelectorAll('.md-filled-button, .md-secondary-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.6);
+        transform: scale(0);
+        animation: md-ripple 0.6s linear;
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+        pointer-events: none;
+      `;
+      
+      this.style.position = 'relative';
+      this.style.overflow = 'hidden';
+      this.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+  });
+
+  // Auto-dismiss alerts after 5 seconds
+  setTimeout(function() {
+    document.querySelectorAll('.alert').forEach(alert => {
+      if (alert) {
+        const bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+      }
+    });
+  }, 5000);
+});
+
+// Enhanced Image Preview Function
+function previewImage(input) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      let wrapper = input.parentElement.querySelector('.image-wrapper');
+      
+      // Create wrapper if it doesn't exist
+      if (!wrapper) {
+        wrapper = document.createElement('div');
+        wrapper.className = 'image-wrapper';
+        input.parentElement.appendChild(wrapper);
+      }
+      
+      // Clear wrapper and create new elements
+      wrapper.innerHTML = '';
+      
+      // Create image element
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.alt = "Preview";
+      wrapper.appendChild(img);
+      
+      // Create remove button
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-image';
+      removeBtn.innerHTML = '×';
+      wrapper.appendChild(removeBtn);
+      
+      // Show wrapper
+      wrapper.style.display = "flex";
+      
+      // Remove functionality
+      removeBtn.onclick = function(e) {
+        e.preventDefault();
+        input.value = '';
+        wrapper.remove();
+        
+        // Handle image clear for existing images
+        if (img.src.includes('/media/')) {
+          const deleteInput = document.createElement('input');
+          deleteInput.type = 'hidden';
+          deleteInput.name = 'image-clear';
+          deleteInput.value = 'on';
+          input.parentElement.appendChild(deleteInput);
+        }
+      };
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Add CSS animation for ripple effect
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes md-ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+{% endblock %}

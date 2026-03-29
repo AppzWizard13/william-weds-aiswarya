@@ -1,0 +1,573 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Load custom theme CSS -->
+<link rel="stylesheet" href="{% static 'mob-custom/theme-enh1.css' %}"> 
+<link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Material Design Header -->
+    <div class="md-header mb-4">
+      <div class="row align-items-center">
+        <div class="col">
+          <h1 class="md-title mb-1">
+            <i class="bx bx-images me-2 text-primary"></i>
+            {% if banner %}Edit{% else %}Add New{% endif %} Banner
+          </h1>
+          <p class="md-subtitle mb-0">
+            {% if banner %}
+              Update banner details for "{{ banner.name }}"
+            {% else %}
+              Create a new promotional banner for your store
+            {% endif %}
+          </p>
+        </div>
+        <div class="col-auto">
+          <a href="{% url 'banner_list' %}" class="md-filled-button px-5">
+            <i class="bx bx-arrow-back me-2"></i>Back to Banners
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Messages Container (Top Right) -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+      {% if messages %}
+        {% for message in messages %}
+        <div class="toast align-items-center text-white border-0 shadow-lg 
+            {% if message.tags == 'error' %}bg-danger{% elif message.tags == 'success' %}bg-success{% else %}bg-primary{% endif %}" 
+            role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-medium">
+                    <i class="bx bx-{% if message.tags == 'error' %}error-circle{% else %}check-circle{% endif %} me-2"></i>
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="md-card">
+      <div class="md-card-header">
+        <h5 class="md-card-title mb-0">
+          <i class="bx bx-detail me-2"></i>Banner Details
+        </h5>
+        <p class="text-muted mt-2 mb-0">Fill in the information below to {% if banner %}update{% else %}create{% endif %} your banner</p>
+      </div>
+      
+      <div class="md-card-body">
+        
+        <!-- Show Form Errors (Styled) -->
+        {% if form.errors %}
+        <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+          <i class="bx bx-error-circle fs-4 me-2"></i>
+          <div>
+            <strong>Please correct the following errors:</strong>
+            <ul class="mb-0 mt-2">
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                  <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+          {% csrf_token %}
+          
+          <div class="row g-4  m-4">
+            <!-- Banner Name -->
+            <div class="col-md-6">
+              <label for="bannerName" class="form-label fw-semibold">
+                <i class="bx bx-tag me-1 text-primary"></i>Banner Name <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control form-control-lg {% if form.name.errors %}is-invalid{% endif %}"
+                    id="bannerName" name="name" value="{{ form.name.value|default:'' }}" placeholder="e.g., Wedding Hero Banner" required>
+              {% if form.name.errors %}
+              <div class="invalid-feedback">{{ form.name.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">Give your banner a unique, descriptive name</div>
+              {% endif %}
+            </div>
+
+            <!-- Banner Series -->
+            <div class="col-md-6">
+              <label for="bannerSeries" class="form-label fw-semibold">
+                <i class="bx bx-sort me-1 text-primary"></i>Banner Series <span class="text-danger">*</span>
+              </label>
+              <input type="number" class="form-control form-control-lg {% if form.series.errors %}is-invalid{% endif %}"
+                    id="bannerSeries" name="series" value="{{ form.series.value|default:'' }}" placeholder="e.g., 1, 2, 3" min="1" required>
+              {% if form.series.errors %}
+              <div class="invalid-feedback">{{ form.series.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">Series 1 = Main Carousel, 2 = Side Banner 1, 3 = Side Banner 2</div>
+              {% endif %}
+            </div>
+
+            <!-- Banner Image with Preview -->
+            <div class="col-12">
+              <label for="bannerImage" class="form-label fw-semibold">
+                <i class="bx bx-image me-1 text-primary"></i>Banner Image <span class="text-danger">*</span>
+              </label>
+              
+              <!-- Custom file input with preview -->
+              <div class="image-upload-container">
+                <input type="file" 
+                       name="image" 
+                       id="bannerImage" 
+                       class="d-none" 
+                       accept="image/*">
+                
+                <div class="upload-area p-4 border-2 border-dashed rounded-3 text-center" 
+                     id="uploadArea"
+                     style="cursor: pointer; border-color: {% if form.image.errors %}var(--md-sys-color-error){% else %}#e2e8f0{% endif %};">
+                  
+                  <!-- Preview container -->
+                  <div id="imagePreview" style="{% if not banner.image %}display: none;{% endif %}">
+                    <img id="previewImg" 
+                         src="{% if banner and banner.image %}{{ banner.image.url }}{% else %}#{% endif %}"
+                         alt="Preview" 
+                         class="img-fluid rounded-3 mb-3" 
+                         style="max-height: 200px; object-fit: contain;">
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                      <button type="button" class="btn btn-sm btn-outline-primary" id="changeImageBtn">
+                        <i class="bx bx-refresh me-1"></i>Change Image
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger" id="removeImageBtn">
+                        <i class="bx bx-trash me-1"></i>Remove
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Upload placeholder -->
+                  <div id="uploadPlaceholder" style="{% if banner and banner.image %}display: none;{% endif %}">
+                    <i class="bx bx-cloud-upload" style="font-size: 48px; color: var(--md-sys-color-primary);"></i>
+                    <p class="mb-2 fw-medium">Click to upload banner image</p>
+                    <small class="text-muted">or drag and drop (JPG, PNG, GIF - Recommended: 1920x1080px for hero section)</small>
+                  </div>
+                </div>
+                
+                <!-- Hidden field to track if image was removed -->
+                <input type="hidden" name="image_removed" id="imageRemoved" value="false">
+              </div>
+              
+              {% if form.image.errors %}
+                <div class="text-danger mt-1 small">
+                  {% for error in form.image.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- ===== EXISTING FIELDS ===== -->
+            
+            <!-- Tagline -->
+            <div class="col-md-6">
+              <label for="tagline" class="form-label fw-semibold">
+                <i class="bx bx-purchase-tag me-1 text-primary"></i>Tagline
+              </label>
+              <input type="text" class="form-control form-control-lg {% if form.tagline.errors %}is-invalid{% endif %}"
+                    id="tagline" name="tagline" value="{{ form.tagline.value|default:'' }}" placeholder="e.g., We're Getting Married">
+              {% if form.tagline.errors %}
+              <div class="invalid-feedback">{{ form.tagline.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">Short text above the main title (pre-title)</div>
+              {% endif %}
+            </div>
+
+            <!-- Button Text -->
+            <div class="col-md-6">
+              <label for="buttonText" class="form-label fw-semibold">
+                <i class="bx bx-pointer me-1 text-primary"></i>Button Text
+              </label>
+              <input type="text" class="form-control form-control-lg {% if form.button_text.errors %}is-invalid{% endif %}"
+                    id="buttonText" name="button_text" value="{{ form.button_text.value|default:'RSVP Now' }}" placeholder="e.g., RSVP Now">
+              {% if form.button_text.errors %}
+              <div class="invalid-feedback">{{ form.button_text.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">Text displayed on the call-to-action button</div>
+              {% endif %}
+            </div>
+
+            <!-- Title Main -->
+            <div class="col-md-6">
+              <label for="titleMain" class="form-label fw-semibold">
+                <i class="bx bx-heading me-1 text-primary"></i>Title (Main)
+              </label>
+              <input type="text" class="form-control form-control-lg {% if form.title_main.errors %}is-invalid{% endif %}"
+                    id="titleMain" name="title_main" value="{{ form.title_main.value|default:'' }}" placeholder="e.g., James">
+              {% if form.title_main.errors %}
+              <div class="invalid-feedback">{{ form.title_main.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Title Highlight -->
+            <div class="col-md-6">
+              <label for="titleHighlight" class="form-label fw-semibold">
+                <i class="bx bx-highlight me-1 text-primary"></i>Title (Highlight)
+              </label>
+              <input type="text" class="form-control form-control-lg {% if form.title_highlight.errors %}is-invalid{% endif %}"
+                    id="titleHighlight" name="title_highlight" value="{{ form.title_highlight.value|default:'' }}" placeholder="e.g., Jane">
+              {% if form.title_highlight.errors %}
+              <div class="invalid-feedback">{{ form.title_highlight.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">Highlighted part of the title (shown with & symbol)</div>
+              {% endif %}
+            </div>
+
+            <!-- Subtitle -->
+            <div class="col-12">
+              <label for="subtitle" class="form-label fw-semibold">
+                <i class="bx bx-text me-1 text-primary"></i>Subtitle
+              </label>
+              <textarea class="form-control form-control-lg {% if form.subtitle.errors %}is-invalid{% endif %}"
+                      id="subtitle" name="subtitle" rows="2" placeholder="e.g., Join us as we celebrate our love...">{{ form.subtitle.value|default:'' }}</textarea>
+              {% if form.subtitle.errors %}
+              <div class="invalid-feedback">{{ form.subtitle.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- ===== NEW FIELDS ADDED ===== -->
+            
+            <!-- Pre Title -->
+            <div class="col-md-6">
+              <label for="preTitle" class="form-label fw-semibold">
+                <i class="bx bx-text me-1 text-primary"></i>Pre Title
+              </label>
+              <input type="text" class="form-control form-control-lg {% if form.pre_title.errors %}is-invalid{% endif %}"
+                    id="preTitle" name="pre_title" value="{{ form.pre_title.value|default:'' }}" placeholder="e.g., We're Getting Married">
+              {% if form.pre_title.errors %}
+              <div class="invalid-feedback">{{ form.pre_title.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">Alternative to tagline - appears above main title</div>
+              {% endif %}
+            </div>
+
+            <!-- Order -->
+            <div class="col-md-6">
+              <label for="order" class="form-label fw-semibold">
+                <i class="bx bx-sort-numeric-down me-1 text-primary"></i>Display Order
+              </label>
+              <input type="number" class="form-control form-control-lg {% if form.order.errors %}is-invalid{% endif %}"
+                    id="order" name="order" value="{{ form.order.value|default:'0' }}" placeholder="0, 1, 2..." min="0">
+              {% if form.order.errors %}
+              <div class="invalid-feedback">{{ form.order.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">Lower numbers appear first (0 = highest priority)</div>
+              {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+              <label for="description" class="form-label fw-semibold">
+                <i class="bx bx-detail me-1 text-primary"></i>Description
+              </label>
+              <textarea class="form-control form-control-lg {% if form.description.errors %}is-invalid{% endif %}"
+                      id="description" name="description" rows="3" placeholder="Detailed description for the hero section...">{{ form.description.value|default:'' }}</textarea>
+              {% if form.description.errors %}
+              <div class="invalid-feedback">{{ form.description.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">Main description text for the hero section</div>
+              {% endif %}
+            </div>
+
+            <!-- RSVP Link -->
+            <div class="col-md-6">
+              <label for="rsvpLink" class="form-label fw-semibold">
+                <i class="bx bx-link me-1 text-primary"></i>RSVP Link
+              </label>
+              <input type="text" class="form-control form-control-lg {% if form.rsvp_link.errors %}is-invalid{% endif %}"
+                    id="rsvpLink" name="rsvp_link" value="{{ form.rsvp_link.value|default:'#rsvp' }}" placeholder="#rsvp or /rsvp/">
+              {% if form.rsvp_link.errors %}
+              <div class="invalid-feedback">{{ form.rsvp_link.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">URL for the RSVP button</div>
+              {% endif %}
+            </div>
+
+            <!-- Details Link -->
+            <div class="col-md-6">
+              <label for="detailsLink" class="form-label fw-semibold">
+                <i class="bx bx-link me-1 text-primary"></i>Details Link
+              </label>
+              <input type="text" class="form-control form-control-lg {% if form.details_link.errors %}is-invalid{% endif %}"
+                    id="detailsLink" name="details_link" value="{{ form.details_link.value|default:'#details' }}" placeholder="#details or /details/">
+              {% if form.details_link.errors %}
+              <div class="invalid-feedback">{{ form.details_link.errors.0 }}</div>
+              {% else %}
+              <div class="form-text">URL for the View Details button</div>
+              {% endif %}
+            </div>
+
+            <!-- Is Active -->
+            <div class="col-md-12">
+              <div class="form-check form-switch">
+                <input type="checkbox" class="form-check-input" id="isActive" name="is_active" 
+                       style="width: 50px; height: 25px; cursor: pointer;"
+                       {% if form.is_active.value or banner.is_active %}checked{% endif %}>
+                <label for="isActive" class="form-check-label fw-semibold ms-2">
+                  <i class="bx bx-check-circle me-1 text-success"></i>Active Banner
+                </label>
+                <div class="form-text mt-1">Only active banners will be displayed on the website</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Buttons -->
+          <div class="mt-5 d-flex gap-3 m-4">
+            <button type="submit" class="md-filled-button px-5">
+              <i class="bx bx-save me-2"></i> {% if banner %}Update{% else %}Save{% endif %} Banner
+            </button>
+            <a href="{% url 'banner_list' %}" class="btn btn-outline-secondary rounded-pill px-5">
+              <i class="bx bx-x me-2"></i> Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .border-2 { border-width: 2px !important; }
+  .border-dashed { border-style: dashed !important; }
+  
+  .upload-area {
+    transition: all 0.3s ease;
+    background: var(--ocean-ultra-light);
+  }
+  
+  .upload-area:hover {
+    background-color: var(--ocean-light);
+    border-color: var(--ocean-primary) !important;
+  }
+  
+  .image-upload-container {
+    width: 100%;
+  }
+  
+  #previewImg {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .btn-outline-primary {
+    border: 1px solid var(--ocean-primary);
+    color: var(--ocean-primary);
+    background: transparent;
+    border-radius: 20px;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-outline-primary:hover {
+    background: var(--ocean-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .btn-outline-danger {
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    background: transparent;
+    border-radius: 20px;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-outline-danger:hover {
+    background: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .form-control, .form-select {
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: white;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    border-color: var(--ocean-primary);
+    box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.08);
+    outline: none;
+  }
+  
+  .form-control.is-invalid {
+    border-color: #dc3545;
+  }
+  
+  .invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  
+  .form-text {
+    color: var(--text-light);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  
+  .form-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-check-input:checked {
+    background-color: var(--ocean-primary);
+    border-color: var(--ocean-primary);
+  }
+  
+  .alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+  }
+  
+  .alert-danger ul {
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .btn-outline-secondary {
+    border: 1px solid var(--divider);
+    color: var(--text-secondary);
+    background: transparent;
+    border-radius: 20px;
+    padding: 0.75rem 2rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-outline-secondary:hover {
+    background: var(--ocean-ultra-light);
+    color: var(--text-primary);
+    border-color: var(--text-light);
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Image Upload Preview Logic
+  const fileInput = document.getElementById('bannerImage');
+  const uploadArea = document.getElementById('uploadArea');
+  const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  const changeImageBtn = document.getElementById('changeImageBtn');
+  const removeImageBtn = document.getElementById('removeImageBtn');
+  const imageRemoved = document.getElementById('imageRemoved');
+  
+  // Show preview function
+  function showPreview(file) {
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+        uploadPlaceholder.style.display = 'none';
+        imagePreview.style.display = 'block';
+        imageRemoved.value = 'false';
+      }
+      reader.readAsDataURL(file);
+    }
+  }
+  
+  // File input change event
+  if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+      if (this.files && this.files[0]) {
+        showPreview(this.files[0]);
+      }
+    });
+  }
+  
+  // Click on upload area
+  if (uploadArea) {
+    uploadArea.addEventListener('click', function(e) {
+      if (e.target.closest('button')) return;
+      if (fileInput) fileInput.click();
+    });
+  }
+  
+  // Change image button
+  if (changeImageBtn) {
+    changeImageBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (fileInput) fileInput.click();
+    });
+  }
+  
+  // Remove image button
+  if (removeImageBtn) {
+    removeImageBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (fileInput) fileInput.value = '';
+      uploadPlaceholder.style.display = 'block';
+      imagePreview.style.display = 'none';
+      imageRemoved.value = 'true';
+      previewImg.src = '#';
+    });
+  }
+  
+  // Drag and drop functionality
+  if (uploadArea) {
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.style.borderColor = 'var(--ocean-primary)';
+      this.style.backgroundColor = 'rgba(30, 136, 229, 0.05)';
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.style.borderColor = '#e2e8f0';
+      this.style.backgroundColor = '';
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.style.borderColor = '#e2e8f0';
+      this.style.backgroundColor = '';
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type.startsWith('image/') && fileInput) {
+        fileInput.files = files;
+        showPreview(files[0]);
+      }
+    });
+  }
+
+  // Auto-dismiss toast messages after 5 seconds
+  var toastElements = document.querySelectorAll('.toast');
+  if (toastElements.length > 0) {
+    toastElements.forEach(function(toastEl) {
+      var toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+      toast.show();
+      
+      toastEl.addEventListener('hidden.bs.toast', function() {
+        this.remove();
+      });
+    });
+  }
+});
+</script>
+
+{% endblock %}

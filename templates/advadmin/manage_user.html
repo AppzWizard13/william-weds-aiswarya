@@ -1,0 +1,294 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Load custom theme CSS -->
+ <link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}"> 
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Material Design Header -->
+    <div class="md-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div>
+          <h1 class="md-title mb-0">Members Directory</h1>
+          <p class="md-subtitle">Manage your member ecosystem</p>
+        </div>
+        <a href="{% url 'user_registration' %}?next={{ request.path }}" class="md-filled-button">
+          <i class="bx bx-user-plus me-2"></i>Add Member
+        </a>
+      </div>
+    </div>
+
+    <!-- Toast Messages -->
+
+
+    <!-- Main Content Card -->
+    <div class="md-card">
+      <div class="md-card-header">
+        <div class="row align-items-center g-4 mb-4">
+          <div class="col-lg-7">
+            <h5 class="mb-0 fw-semibold" style="color: var(--md-sys-color-on-surface); font-size: 24px;">
+              Active Members
+              <span class="badge ms-3 px-4 py-2 fw-semibold rounded-pill" 
+                    style="background: rgba(25, 118, 210, 0.15); color: var(--md-sys-color-primary); border: 1px solid rgba(25, 118, 210, 0.3);">
+                {{ users|length }}
+              </span>
+            </h5>
+          </div>
+          <div class="col-lg-5">
+            <form method="GET" action="{% url 'user_list' %}" class="d-flex">
+              <div class="input-group flex-grow-1">
+                <span class="input-group-text bg-transparent border-0 ps-4 pe-0">
+                  
+                </span>
+              {% include 'advadmin/componant_serach_input_with_clear_btn.html' %}
+              </div>    
+              {% if request.GET.sort %}
+              <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+              {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive mb-2 ">
+        <table class="table md-table mb-0">
+          <thead>
+            <tr>
+              <th style="width: 90px;">
+                <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}sort={% if request.GET.sort == 'member_id' %}-member_id{% else %}member_id{% endif %}" 
+                   class="text-white text-decoration-none fw-semibold">
+                  ID
+                  {% if request.GET.sort == 'member_id' %}<i class="bx bx-chevron-up ms-1"></i>{% elif request.GET.sort == '-member_id' %}<i class="bx bx-chevron-down ms-1"></i>{% endif %}
+                </a>
+              </th>
+              <th style="width: 160px;">Username</th>
+              <th style="width: 200px;">
+                <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}" 
+                   class="text-white text-decoration-none">
+                  Name
+                  {% if request.GET.sort == 'name' %}<i class="bx bx-chevron-up ms-1"></i>{% elif request.GET.sort == '-name' %}<i class="bx bx-chevron-down ms-1"></i>{% endif %}
+                </a>
+              </th>
+              <th style="width: 150px;">Phone</th>
+              <th style="width: 140px;">Role</th>
+              <th style="width: 110px;">Status</th>
+              <th style="width: 130px;">Subscription</th>
+              <th style="width: 220px;" class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td><span class="fw-bold text-muted fs-5">#{{ user.member_id }}</span></td>
+              <td>
+                <div class="fw-bold" style="color: var(--md-sys-color-on-surface); font-size: 16px;">
+                  {{ user.username }}
+                </div>
+              </td>
+              <td>
+                <span class="fw-semibold text-muted">{{ user.first_name }} {{ user.last_name }}</span>
+              </td>
+              <td>
+                <span class="fw-semibold">{{ user.phone_number|default:"—" }}</span>
+              </td>
+              <td>
+                <span class="md-role-badge px-4 py-2 fs-6">{{ user.staff_role }}</span>
+              </td>
+              <td>
+                <span class="md-badge md-badge--{% if user.is_active %}success{% else %}secondary{% endif %}">
+                  {{ user.is_active|yesno:"Active,Inactive" }}
+                </span>
+              </td>
+              <td>
+                <span class="md-badge md-badge--{% if user.on_subscription %}success{% else %}secondary{% endif %}">
+                  {{ user.on_subscription|yesno:"Active,Inactive" }}
+                </span>
+              </td>
+              <td class="text-center">
+                <div class="d-flex justify-content-center gap-3">
+                  {% comment %} {% if not user.on_subscription and user.staff_role|lower == "member" %}
+                  <a href="{% url 'choose_package' member_id=user.member_id %}" 
+                     class="md-icon-button md-icon-button-primary" title="Renew Subscription">
+                    <i class="bx bx-refresh"></i>
+                  </a>
+                  {% endif %} {% endcomment %}
+                  <a href="{% url 'user_edit' user.username %}" 
+                     class="md-icon-button md-icon-button-secondary" title="Edit Profile">
+                    <i class="bx bx-edit-alt"></i>
+                  </a>
+                  <button class="md-icon-button md-icon-button-{% if user.is_active %}warning{% else %}success{% endif %}" 
+                          data-bs-toggle="modal" data-bs-target="#toggleActiveModal"
+                          data-user-id="{{ user.username }}"
+                          data-action="{% if user.is_active %}block{% else %}unblock{% endif %}"
+                          title="{% if user.is_active %}Block Account{% else %}Unblock Account{% endif %}">
+                    <i class="bx bx-{% if user.is_active %}lock-alt{% else %}lock-open-alt{% endif %}"></i>
+                  </button>
+                  <button class="md-icon-button md-icon-button-danger" 
+                          data-bs-toggle="modal" data-bs-target="#deleteModal"
+                          data-user-id="{{ user.username }}" data-user-name="{{ user.get_full_name }}"
+                          title="Delete Account">
+                    <i class="bx bx-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8">
+                <div class="md-empty-state">
+                  <div class="md-empty-icon">
+                    <i class="bx bx-user-plus" style="color: var(--md-sys-color-on-primary-container);"></i>
+                  </div>
+                  <h5 class="mb-4 fw-semibold" style="color: var(--md-sys-color-on-surface);">
+                    No members found
+                  </h5>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="md-card-footer">
+        {% include 'advadmin/componant_pagination.html' %}
+
+    </div>
+  </div>
+</div>
+
+<!-- Material Design Modals -->
+<div class="modal fade" id="toggleActiveModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-2xl rounded-4" style="backdrop-filter: blur(20px);">
+      <div class="modal-header border-0 pb-3">
+        <h5 class="modal-title fw-semibold" style="color: var(--md-sys-color-on-surface);">Confirm Action</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-0">
+        <p class="mb-3">Are you sure you want to <strong id="actionText" style="color: var(--md-sys-color-primary);"></strong> this member?</p>
+      </div>
+      <div class="modal-footer border-0 pt-0 gap-3">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-medium" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="md-filled-button px-5 py-3" id="confirmToggleActive">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-2xl rounded-4" style="backdrop-filter: blur(20px);">
+      <div class="modal-header bg-gradient text-white rounded-top-4 p-5" 
+           style="background: linear-gradient(135deg, var(--md-sys-color-error), #dc2626) !important;">
+        <h5 class="modal-title fw-semibold mb-0">Delete Member</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-4 px-5">
+        <p class="mb-3">Delete <strong id="userName" class="text-danger fw-bold"></strong>?</p>
+        <p class="text-muted small mb-0">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer border-0 pt-0 px-5 pb-5 gap-3">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-medium" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <a id="confirmDeleteBtn" class="btn btn-danger rounded-pill px-5 py-3 fw-bold shadow-lg">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Auto-show toasts
+  document.querySelectorAll('.toast').forEach(toastEl => {
+    new bootstrap.Toast(toastEl, { delay: 6000 }).show();
+  });
+
+  // Delete modal
+  document.getElementById('deleteModal').addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const userId = button.getAttribute('data-user-id');
+    const userName = button.getAttribute('data-user-name') || 'this member';
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('confirmDeleteBtn').href = "{% url 'user_delete' 0 %}".replace('0', userId);
+  });
+
+  // Toggle active handler
+  document.getElementById('toggleActiveModal').addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget;
+    const userId = button.getAttribute('data-user-id');
+    const action = button.getAttribute('data-action');
+    
+    document.getElementById('actionText').textContent = action;
+    document.getElementById('confirmToggleActive').dataset.userId = userId;
+    document.getElementById('confirmToggleActive').dataset.action = action;
+  });
+
+  document.getElementById('confirmToggleActive').addEventListener('click', async function() {
+    const userId = this.dataset.userId;
+    const action = this.dataset.action;
+    
+    try {
+      const response = await fetch("{% url 'toggle_user_active' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({ user_id: userId, action: action })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setTimeout(() => location.reload(), 500);
+      } else {
+        alert(data.message || 'Action failed');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Action failed');
+    }
+    
+    bootstrap.Modal.getInstance(document.getElementById('toggleActiveModal')).hide();
+  });
+
+  // Material ripple effect on buttons
+  document.querySelectorAll('.md-filled-button, .md-icon-button').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.6);
+        transform: scale(0);
+        animation: md-ripple 0.6s linear;
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+        pointer-events: none;
+      `;
+      
+      this.style.position = 'relative';
+      this.style.overflow = 'hidden';
+      this.appendChild(ripple);
+      
+      setTimeout(() => ripple.remove(), 600);
+    });
+  });
+});
+</script>
+
+{% endblock %}

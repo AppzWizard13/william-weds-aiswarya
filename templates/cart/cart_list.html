@@ -1,0 +1,206 @@
+{% extends 'myoceanbasket/index.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Glassmorphism & Theme Styling */
+    .cart-header-section {
+        background: linear-gradient(135deg, #0d6efd, #0056b3), url('{% static "mob/images/bg-leaves-img-pattern.png" %}') no-repeat center/cover;
+        border-radius: 30px;
+    }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+    }
+    .cart-product-img {
+        width: 90px; height: 90px; object-fit: cover; border-radius: 15px;
+    }
+    .qty-control {
+        background: #f1f4f9; border-radius: 50px; padding: 5px; display: inline-flex; align-items: center;
+    }
+    .qty-btn {
+        width: 32px; height: 32px; border-radius: 50%; border: none; background: white; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s;
+    }
+    .qty-btn:hover { background: #0d6efd; color: white; }
+    .sticky-summary { position: sticky; top: 100px; }
+    
+    @media (max-width: 768px) {
+        .cart-product-img { width: 70px; height: 70px; }
+    }
+</style>
+
+<section class="py-5">
+    <div class="container-fluid px-md-5">
+        <!-- Modern Blue Header -->
+        <div class="cart-header-section p-4 p-md-5 mb-5 text-white shadow-lg animate__animated animate__fadeIn">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold mb-2">My Shopping <span class="text-warning">Basket</span></h1>
+                    <p class="lead opacity-85 mb-0">You have <span class="fw-bold text-warning" id="cart-count-header">{{ carts|length }}</span> fresh items ready for checkout.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a href="{% url 'master:product_list' %}" class="btn btn-outline-light rounded-pill px-4">
+                        <i class="bx bx-left-arrow-alt"></i> Back to Shop
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if not carts %}
+        <div class="text-center py-5 glass-card shadow-sm mx-auto" style="max-width: 600px;">
+            <span class="display-1">🛒</span>
+            <h3 class="fw-bold mt-3">Your basket is empty</h3>
+            <p class="text-muted">Looks like you haven't added any fresh catch yet.</p>
+            <a href="{% url 'master:product_list' %}" class="btn btn-primary rounded-pill px-5 py-3 mt-3 shadow">Start Shopping</a>
+        </div>
+        {% else %}
+
+        <div class="row g-4">
+            <!-- Product List -->
+            <div class="col-xl-8">
+                <div class="glass-card shadow-sm overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle mb-0">
+                            <thead class="bg-light border-bottom">
+                                <tr class="text-secondary small fw-bold">
+                                    <th class="ps-4 py-3">PRODUCT</th>
+                                    <th class="py-3 text-center">QUANTITY</th>
+                                    <th class="py-3 text-end pe-4">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in carts %}
+                                <tr class="border-bottom animate__animated animate__fadeInLeft" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
+                                    <td class="ps-4 py-4">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{% static 'advadmin/assets/img/avatars/default-product.png' %}{% endif %}" 
+                                                 class="cart-product-img me-3 border shadow-sm">
+                                            <div>
+                                                <h6 class="fw-bold mb-1">{{ item.product.name }}</h6>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 mb-2">{{ item.display_quantity }}</span>
+                                                
+                                                {% if item.product.is_fresh %}
+                                                <div class="mt-1">
+                                                    <div class="form-check form-switch small">
+                                                        <input class="form-check-input" type="checkbox" id="clean-{{ item.product.id }}" 
+                                                               {% if item.is_cleaned %}checked{% endif %} onchange="updateCart('{{ item.product.id }}')">
+                                                        <label class="text-muted">Cleaned & Gutted</label>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center py-4">
+                                        <div class="qty-control mb-2">
+                                            <button class="qty-btn" onclick="changeQty('{{ item.product.id }}', -1)">-</button>
+                                            <input type="text" class="form-control border-0 text-center bg-transparent fw-bold" 
+                                                   style="width: 40px;" id="qty-{{ item.product.id }}" value="{{ item.quantity|floatformat:0 }}" readonly>
+                                            <button class="qty-btn" onclick="changeQty('{{ item.product.id }}', 1)">+</button>
+                                        </div>
+                                        <br>
+                                        <button class="btn btn-link text-danger btn-sm p-0 text-decoration-none" onclick="removeItem('{{ item.product.id }}')">
+                                            <i class="bx bx-trash"></i> Remove
+                                        </button>
+                                    </td>
+                                    <td class="text-end pe-4 py-4">
+                                        <span class="h5 fw-bold text-dark">₹<span id="total-{{ item.product.id }}">{{ item.total_price }}</span></span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="col-xl-4">
+                <div class="glass-card shadow-lg p-4 sticky-summary border-primary border-opacity-10">
+                    <h4 class="fw-bold mb-4">Order Summary</h4>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Subtotal</span>
+                        <span class="fw-bold">₹{{ grand_total }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Delivery</span>
+                        <span class="text-success fw-bold">FREE</span>
+                    </div>
+                    <hr class="my-4 opacity-50">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="h5 fw-bold">Grand Total</span>
+                        <span class="h3 fw-bold text-primary mb-0">₹<span id="grand-total">{{ grand_total }}</span></span>
+                    </div>
+                    
+                    <button class="btn btn-dark btn-lg w-100 py-3 rounded-pill shadow-lg transition-all hover-scale-105 fw-bold">
+                        CHECKOUT NOW <i class="bx bx-right-arrow-alt ms-2"></i>
+                    </button>
+                    
+                    <div class="mt-4 p-3 rounded-3 bg-warning bg-opacity-10 border border-warning border-opacity-20 text-center">
+                        <small class="text-dark fw-medium">🚢 Fresh catch from Arabian Sea delivered daily!</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function changeQty(pid, delta) {
+        const input = document.getElementById('qty-' + pid);
+        let val = parseFloat(input.value) + delta;
+        if (val < 1) return;
+        input.value = val;
+        updateCart(pid);
+    }
+
+    function updateCart(pid) {
+        const qty = document.getElementById('qty-' + pid).value;
+        const clean = document.getElementById('clean-' + pid)?.checked || false;
+        const note = document.getElementById('note-' + pid)?.value || '';
+
+        const fd = new FormData();
+        fd.append('product_id', pid);
+        fd.append('quantity', qty);
+        fd.append('is_cleaned', clean);
+        fd.append('special_preparation', note);
+        fd.append('action', 'update');
+
+        fetch("{% url 'ecommerce:update' %}", {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'},
+            body: fd
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); 
+            }
+        });
+    }
+
+    function removeItem(pid) {
+        if(!confirm("Remove this item?")) return;
+        const fd = new FormData();
+        fd.append('product_id', pid);
+        fd.append('action', 'remove');
+
+        fetch("{% url 'ecommerce:update' %}", {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'},
+            body: fd
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) location.reload();
+        });
+    }
+</script>
+{% endblock %}

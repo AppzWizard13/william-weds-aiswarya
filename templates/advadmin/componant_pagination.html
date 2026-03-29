@@ -1,0 +1,36 @@
+{% if is_paginated %}
+<div class="p-5 pt-0 border-top mt-2" style="border-color: rgba(25, 118, 210, 0.1) !important;">
+  <nav aria-label="Page navigation mt-2">
+    <ul class="pagination md-pagination justify-content-end mt-3" style="gap: 8px;">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link fw-semibold" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+          <i class="bx bx-chevron-left me-1"></i>
+        </a>
+      </li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active">
+          <a class="page-link fw-bold text-white">{{ num }}</a>
+        </li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <li class="page-item">
+          <a class="page-link fw-semibold" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
+        </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link fw-semibold" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+          <i class="bx bx-chevron-right ms-1"></i>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
+{% endif %}

@@ -1,0 +1,174 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Load custom theme CSS -->
+ <link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}"> 
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Material Design Header -->
+    {% comment %} <div class="md-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div>
+          <h1 class="md-title mb-0">
+            {% if object %}Edit{% else %}Add{% endif %} Member
+          </h1>
+          <p class="md-subtitle">
+            {% if object %}Update member details{% else %}Create new member account{% endif %}
+          </p>
+        </div>
+        <a href="{% url 'user_list' %}" class="md-filled-button">
+          <i class="bx bx-arrow-back me-2"></i>Back to Members
+        </a>
+      </div>
+    </div> {% endcomment %}
+
+    <!-- Toast Messages -->
+
+
+    <!-- Main Content Card - SLIGHT BLUE CANVAS -->
+    <div class="md-card md-form-canvas">
+      <div class="md-card-header">
+        <h5 class="mb-0 fw-semibold" style="color: var(--md-sys-color-on-surface); font-size: 24px;">
+          {% if object %}Edit Member Details{% else %}New Member Registration{% endif %}
+        </h5>
+      </div>
+
+      <div class="card-body p-3">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+          <div class="row g-4">
+            {% for field in form %}
+            <div class="col-lg-6 col-md-6">
+              <label class="form-label fw-semibold mb-2 md-field-label" for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+              
+              <!-- Material Design Field Wrapper -->
+              <div class="md-field-wrapper">
+                {{ field }}
+              </div>
+              
+              <!-- Error styling -->
+              {% if field.errors %}
+              <div class="invalid-feedback d-block mt-2 text-danger fw-medium">
+                {{ field.errors|join:", " }}
+              </div>
+              {% endif %}
+              
+              <!-- Field help text -->
+              {% if field.help_text %}
+              <div class="form-text mt-2 fw-medium" style="color: var(--md-sys-color-outline);">
+                {{ field.help_text }}
+              </div>
+              {% endif %}
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="text-center py-5">
+                <div class="md-empty-icon">
+                  <i class="bx bx-user-plus" style="color: var(--md-sys-color-on-primary-container);"></i>
+                </div>
+                <h5 class="mt-4 mb-3 fw-semibold" style="color: var(--md-sys-color-on-surface);">
+                  No form fields available
+                </h5>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Form Actions -->
+          <div class="mt-6 pt-4 border-top">
+            <div class="d-flex justify-content-end gap-3 flex-wrap">
+              <a href="{% url 'user_list' %}" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-medium md-secondary-btn">
+                <i class="bx bx-arrow-back me-2"></i>Cancel
+              </a>
+              <button type="submit" class="md-filled-button  py-3">
+                <i class="bx bx-{% if object %}edit{% else %}user-plus{% endif %} me-2"></i>
+                {% if object %}Update Member{% else %}Create Member{% endif %}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Enhanced Material Design Form Interactions
+document.addEventListener("DOMContentLoaded", function() {
+  // Auto-show Material Design toasts
+  document.querySelectorAll('.toast').forEach(toastEl => {
+    new bootstrap.Toast(toastEl, { delay: 6000 }).show();
+  });
+
+  // Material Design input enhancement
+  document.querySelectorAll('.md-field-wrapper *').forEach(field => {
+    const wrapper = field.closest('.md-field-wrapper');
+    const input = field.tagName === 'INPUT' || field.tagName === 'SELECT' || field.tagName === 'TEXTAREA' ? field : field.querySelector('input, select, textarea');
+    
+    if (input) {
+      input.addEventListener('focus', function() {
+        wrapper.classList.add('focused');
+      });
+      
+      input.addEventListener('blur', function() {
+        wrapper.classList.remove('focused');
+      });
+      
+      // Error state detection
+      if (wrapper.parentElement.querySelector('.invalid-feedback') || input.classList.contains('is-invalid')) {
+        wrapper.classList.add('error');
+      }
+    }
+  });
+
+  // Form submission state
+  const form = document.querySelector('form');
+  const submitBtn = document.querySelector('.md-filled-button[type="submit"]');
+  
+  if (form && submitBtn) {
+    form.addEventListener('submit', function() {
+      submitBtn.innerHTML = `
+        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+        Saving...
+      `;
+      submitBtn.disabled = true;
+    });
+  }
+
+  // Material ripple effect
+  document.querySelectorAll('.md-filled-button, .md-secondary-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.6);
+        transform: scale(0);
+        animation: md-ripple 0.6s linear;
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+        pointer-events: none;
+      `;
+      
+      this.style.position = 'relative';
+      this.style.overflow = 'hidden';
+      this.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+  });
+});
+</script>
+
+{% endblock %}

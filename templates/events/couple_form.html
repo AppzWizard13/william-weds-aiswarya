@@ -1,0 +1,399 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Material Design Header -->
+    <div class="md-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div>
+          <h1 class="md-title mb-0">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Couple</h1>
+          <p class="md-subtitle">
+            {% if form.instance.groom_name or form.instance.bride_name %}
+              Update {{ form.instance.groom_name }} & {{ form.instance.bride_name }}
+            {% else %}
+              Add the bride and groom details for your wedding website
+            {% endif %}
+          </p>
+        </div>
+        <a href="{% url 'events:couple_list' %}" class="md-filled-button">
+          <i class="bx bx-arrow-back me-2"></i>Back to Couples
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="md-card mx-auto" style="max-width: 1100px;">
+      
+      {% if form.errors %}
+      <div class="alert alert-danger md-alert mb-4 p-4 border-0 shadow-sm rounded-3 mx-5 mt-4">
+        <h6 class="mb-3 fw-semibold">Please fix these errors:</h6>
+        <ul class="mb-0">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <form method="post" id="coupleForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="p-5">
+          <div class="row g-5 align-items-start">
+            
+            <!-- Groom Section -->
+            <div class="col-lg-5">
+              <div class="text-center mb-5 pb-4 border-bottom" style="border-color: rgba(0,0,0,0.08);">
+                <h3 class="fw-bold mb-2" style="color: var(--md-sys-color-primary);">👰 Groom</h3>
+                <p class="text-muted mb-0">Primary groom details</p>
+              </div>
+              
+              <!-- Groom Photo -->
+              <div class="md-form-group mb-5">
+                <label class="form-label fw-semibold mb-3 d-block text-center">Groom Photo</label>
+                <div class="position-relative groom-upload-zone mx-auto mb-3 p-4 border-2 border-dashed rounded-3 text-center image-upload-container" 
+                     style="border-color: rgba(25, 118, 210, 0.3); background: #f8fafc; width: 220px; height: 280px; cursor: pointer; transition: all 0.3s ease;">
+                  
+                  {% if form.instance.groom_image %}
+                    <img id="groom-preview-img" src="{{ form.instance.groom_image.url }}" class="preview-image w-100 h-100 rounded-3 object-fit-cover">
+                    <button type="button" class="remove-image-btn position-absolute top-12px end-12px btn btn-sm btn-outline-danger rounded-circle p-1" style="width: 32px; height: 32px; z-index: 5;">
+                      <i class="bx bx-x fs-6"></i>
+                    </button>
+                  {% else %}
+                    <div class="upload-placeholder d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                      <i class="bx bx-male-sign fs-2 mb-3 opacity-75"></i>
+                      <h6 class="mb-2 fw-semibold">Upload Photo</h6>
+                      <small>400x500px recommended</small>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Hidden File Input -->
+                  <input type="file" id="groom-image-input" name="{{ form.groom_image.html_name }}" class="image-input" accept="image/*" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;">
+                </div>
+                <small class="text-muted d-block text-center w-100">JPG, PNG • Max 5MB</small>
+              </div>
+
+              <!-- Groom Name -->
+              <div class="md-form-group mb-4">
+                <label class="form-label fw-semibold mb-3">Groom Name <span class="text-danger">*</span></label>
+                {{ form.groom_name }}
+              </div>
+
+              <!-- Groom Bio Lines -->
+              <div class="md-form-group mb-4">
+                <label class="form-label fw-semibold mb-3">Groom Bio - Line 1</label>
+                {{ form.groom_bio_line1 }}
+              </div>
+
+              <div class="md-form-group mb-4">
+                <label class="form-label fw-semibold mb-3">Groom Bio - Line 2</label>
+                {{ form.groom_bio_line2 }}
+              </div>
+
+              <div class="md-form-group mb-4">
+                <label class="form-label fw-semibold mb-3">Groom Bio - Line 3</label>
+                {{ form.groom_bio_line3 }}
+              </div>
+            </div>
+
+            <!-- Bride Section -->
+            <div class="col-lg-5 offset-lg-2">
+              <div class="text-center mb-5 pb-4 border-bottom" style="border-color: rgba(0,0,0,0.08);">
+                <h3 class="fw-bold mb-2" style="color: #ec4899;">👰‍♀️ Bride</h3>
+                <p class="text-muted mb-0">Primary bride details</p>
+              </div>
+              
+              <!-- Bride Photo -->
+              <div class="md-form-group mb-5">
+                <label class="form-label fw-semibold mb-3 d-block text-center">Bride Photo</label>
+                <div class="position-relative bride-upload-zone mx-auto mb-3 p-4 border-2 border-dashed rounded-3 text-center image-upload-container" 
+                     style="border-color: rgba(236, 72, 153, 0.3); background: #fdf2f8; width: 220px; height: 280px; cursor: pointer; transition: all 0.3s ease;">
+                  
+                  {% if form.instance.bride_image %}
+                    <img id="bride-preview-img" src="{{ form.instance.bride_image.url }}" class="preview-image w-100 h-100 rounded-3 object-fit-cover">
+                    <button type="button" class="remove-image-btn position-absolute top-12px end-12px btn btn-sm btn-outline-danger rounded-circle p-1" style="width: 32px; height: 32px; z-index: 5;">
+                      <i class="bx bx-x fs-6"></i>
+                    </button>
+                  {% else %}
+                    <div class="upload-placeholder d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                      <i class="bx bx-female-sign fs-2 mb-3 opacity-75"></i>
+                      <h6 class="mb-2 fw-semibold">Upload Photo</h6>
+                      <small>400x500px recommended</small>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Hidden File Input -->
+                  <input type="file" id="bride-image-input" name="{{ form.bride_image.html_name }}" class="image-input" accept="image/*" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;">
+                </div>
+                <small class="text-muted d-block text-center w-100">JPG, PNG • Max 5MB</small>
+              </div>
+
+              <!-- Bride Name -->
+              <div class="md-form-group mb-4">
+                <label class="form-label fw-semibold mb-3">Bride Name <span class="text-danger">*</span></label>
+                {{ form.bride_name }}
+              </div>
+
+              <!-- Bride Bio Lines -->
+              <div class="md-form-group mb-4">
+                <label class="form-label fw-semibold mb-3">Bride Bio - Line 1</label>
+                {{ form.bride_bio_line1 }}
+              </div>
+
+              <div class="md-form-group mb-4">
+                <label class="form-label fw-semibold mb-3">Bride Bio - Line 2</label>
+                {{ form.bride_bio_line2 }}
+              </div>
+
+              <div class="md-form-group mb-4">
+                <label class="form-label fw-semibold mb-3">Bride Bio - Line 3</label>
+                {{ form.bride_bio_line3 }}
+              </div>
+            </div>
+
+            <!-- Wedding Details -->
+            <div class="col-lg-12">
+              <div class="row g-4 mb-5 pt-4 border-top" style="border-color: rgba(0,0,0,0.08);">
+                <div class="col-lg-3">
+                  <div class="md-form-group">
+                    <label class="form-label fw-semibold mb-3">Wedding Date <span class="text-danger">*</span></label>
+                    {{ form.wedding_date }}
+                  </div>
+                </div>
+                <div class="col-lg-5">
+                  <div class="md-form-group">
+                    <label class="form-label fw-semibold mb-3">Wedding Location <span class="text-danger">*</span></label>
+                    {{ form.location }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Love Story -->
+              <div class="md-form-group">
+                <label class="form-label fw-semibold fs-5 mb-3">Our Love Story</label>
+                {{ form.story }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="p-5 pt-0 border-top" style="border-color: rgba(25, 118, 210, 0.1) !important;">
+          <div class="d-flex justify-content-end gap-3">
+            <a href="{% url 'events:couple_list' %}" class="btn btn-outline-secondary rounded-pill px-6 py-3 fw-semibold shadow-sm">
+              <i class="bx bx-x me-2"></i>Cancel
+            </a>
+            <button type="submit" class="md-filled-button rounded-pill px-6 py-3 fw-semibold shadow-lg">
+              <i class="bx bx-save me-2"></i>Save Couple Details
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+.image-upload-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-upload-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.groom-upload-zone:hover {
+  border-color: var(--md-sys-color-primary) !important;
+  background: rgba(25, 118, 210, 0.05) !important;
+}
+
+.bride-upload-zone:hover {
+  border-color: #ec4899 !important;
+  background: rgba(236, 72, 153, 0.05) !important;
+}
+
+.object-fit-cover {
+  object-fit: cover !important;
+}
+
+.preview-image {
+  transition: all 0.3s ease;
+}
+
+.top-12px { top: 12px !important; }
+.end-12px { right: 12px !important; }
+
+.md-input {
+  border: 2px solid rgba(25, 118, 210, 0.2) !important;
+  border-radius: 16px !important;
+  padding: 16px 20px !important;
+  background: #f8fafc !important;
+  transition: all 0.3s ease;
+}
+
+.md-input:focus {
+  border-color: var(--md-sys-color-primary) !important;
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15) !important;
+  background: white !important;
+  transform: translateY(-1px);
+}
+
+.md-filled-button {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 14px 28px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4) !important;
+}
+
+.md-filled-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 35px rgba(59, 130, 246, 0.5) !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Image upload handlers
+  const groomZone = document.querySelector('.groom-upload-zone');
+  const brideZone = document.querySelector('.bride-upload-zone');
+  const groomInput = document.getElementById('groom-image-input');
+  const brideInput = document.getElementById('bride-image-input');
+
+  // Click to upload (prevent clicking remove button)
+  groomZone.addEventListener('click', (e) => {
+    if (!e.target.closest('.remove-image-btn')) {
+      groomInput.click();
+    }
+  });
+  brideZone.addEventListener('click', (e) => {
+    if (!e.target.closest('.remove-image-btn')) {
+      brideInput.click();
+    }
+  });
+
+  // Groom image change handler
+  groomInput.addEventListener('change', function(e) {
+    handleImageUpload(e, 'groom');
+  });
+
+  // Bride image change handler  
+  brideInput.addEventListener('change', function(e) {
+    handleImageUpload(e, 'bride');
+  });
+
+  function handleImageUpload(event, type) {
+    const file = event.target.files[0];
+    const zone = type === 'groom' ? groomZone : brideZone;
+    
+    if (file) {
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('❌ Image must be less than 5MB!');
+        event.target.value = '';
+        return;
+      }
+
+      // Validate image type
+      if (!file.type.startsWith('image/')) {
+        alert('❌ Please select a valid image file (JPG, PNG, etc.)');
+        event.target.value = '';
+        return;
+      }
+
+      // Create preview - Update content but preserve input
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // Store input reference
+        const input = type === 'groom' ? groomInput : brideInput;
+        
+        // Set preview content
+        zone.innerHTML = `
+          <img src="${e.target.result}" class="preview-image w-100 h-100 rounded-3 object-fit-cover">
+          <button type="button" class="remove-image-btn position-absolute top-12px end-12px btn btn-sm btn-outline-danger rounded-circle p-1" style="width: 32px; height: 32px; z-index: 5;">
+            <i class="bx bx-x fs-6"></i>
+          </button>
+        `;
+        
+        // Re-append the hidden input to maintain form functionality
+        zone.appendChild(input);
+
+        // Add remove button handler
+        const removeBtn = zone.querySelector('.remove-image-btn');
+        removeBtn.addEventListener('click', function(ev) {
+          ev.stopPropagation();
+          resetImageZone(type);
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function resetImageZone(type) {
+    const zone = type === 'groom' ? groomZone : brideZone;
+    const input = type === 'groom' ? groomInput : brideInput;
+    
+    if (type === 'groom') {
+      zone.innerHTML = `
+        <div class="upload-placeholder d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+          <i class="bx bx-male-sign fs-2 mb-3 opacity-75"></i>
+          <h6 class="mb-2 fw-semibold">Upload Photo</h6>
+          <small>400x500px recommended</small>
+        </div>
+      `;
+    } else {
+      zone.innerHTML = `
+        <div class="upload-placeholder d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+          <i class="bx bx-female-sign fs-2 mb-3 opacity-75"></i>
+          <h6 class="mb-2 fw-semibold">Upload Photo</h6>
+          <small>400x500px recommended</small>
+        </div>
+      `;
+    }
+    
+    // Re-append the input
+    zone.appendChild(input);
+    input.value = '';
+  }
+
+  // Handle existing remove buttons (for edit mode)
+  document.querySelectorAll('.remove-image-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const zone = this.closest('.image-upload-container');
+      const input = zone.querySelector('input[type="file"]');
+      
+      if (zone.classList.contains('groom-upload-zone')) {
+        resetImageZone('groom');
+      } else {
+        resetImageZone('bride');
+      }
+    });
+  });
+
+  // Form validation
+  document.getElementById('coupleForm').addEventListener('submit', function(e) {
+    const groomName = document.querySelector('input[name="groom_name"]').value.trim();
+    const brideName = document.querySelector('input[name="bride_name"]').value.trim();
+    const weddingDate = document.querySelector('input[name="wedding_date"]').value;
+    
+    if (!groomName || !brideName || !weddingDate) {
+      e.preventDefault();
+      alert('❌ Groom Name, Bride Name, and Wedding Date are required!');
+      return false;
+    }
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,623 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Load custom theme CSS -->
+<link rel="stylesheet" href="{% static 'mob-custom/theme-enh1.css' %}"> 
+{% comment %} <link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">  {% endcomment %}
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- MD3 Header -->
+    <div class="md-header mb-4">
+      <div class="row align-items-center">
+        <div class="col">
+          <h1 class="md-title mb-1">Account Settings</h1>
+          <p class="md-subtitle mb-0">Update your profile information and preferences</p>
+        </div>
+        <div class="col-auto">
+          <a href="{% url 'dashboard' %}" class="md-filled-button">
+            <i class="bx bx-arrow-back me-2"></i> Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Section -->
+    {% if messages %}
+    <div class="messages-section mb-4">
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show d-flex align-items-center shadow-sm rounded-3" 
+           style="border-left: 5px solid {% if message.tags == 'error' %}#dc3545{% else %}#198754{% endif %}; background: white;">
+        <div class="rounded-circle p-2 me-3" 
+             style="background: {% if message.tags == 'error' %}rgba(220,53,69,0.15){% else %}rgba(25,135,84,0.15){% endif %}; 
+                    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+          <i class="bx {% if message.tags == 'error' %}bx-error-circle{% else %}bx-check-circle{% endif %}" 
+             style="font-size: 20px; color: {% if message.tags == 'error' %}#dc3545{% else %}#198754{% endif %};"></i>
+        </div>
+        <span class="fw-medium flex-grow-1">{{ message }}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- MD3 Tabs -->
+    <div class="md-tabs-container mb-4">
+      <ul class="nav nav-pills flex-column flex-md-row gap-2 md-tab-wrapper">
+        <li class="nav-item">
+          <a class="nav-link md-tab active" href="{% url 'account_settings' %}">
+            <i class="bx bx-user md-tab-icon"></i>
+            <span class="md-tab-label">Account</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link md-tab" href="{% url 'business_details' %}">
+            <i class="bx bx-building-house md-tab-icon"></i>
+            <span class="md-tab-label">Business Details</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link md-tab" href="#">
+            <i class="bx bx-link-alt md-tab-icon"></i>
+            <span class="md-tab-label">Connections</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Form Errors -->
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger md-card mb-4">
+      <i class="bx bx-error-circle me-2"></i>
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+      <!-- Profile Card -->
+      <div class="col-xl-8">
+        <form method="post" enctype="multipart/form-data" class="md-form" novalidate id="profileForm">
+          {% csrf_token %}
+          
+          <div class="md-card mb-4">
+            <div class="md-card-header">
+              <h5 class="mb-0">
+                <i class="bx bx-user-circle me-2 text-primary"></i>
+                Profile Details
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              
+              <!-- Profile Image Section - FIXED -->
+              <div class="row mb-5 align-items-center">
+                <div class="col-md-4 text-center text-md-start">
+                  <div class="md-avatar-wrapper mb-3 position-relative d-inline-block">
+                    <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'advadmin/assets/img/avatars/default-avatar.png' %}{% endif %}" 
+                         alt="Profile Avatar" class="md-avatar-img rounded-circle" id="profilePreview" 
+                         style="width: 160px; height: 160px; object-fit: cover; border: 5px solid white; box-shadow: 0 12px 32px rgba(0,0,0,0.15);">
+                    {% if user.profile_image %}
+                    <button type="button" class="btn btn-sm btn-danger position-absolute bottom-0 end-0 rounded-circle profile-clear-btn" 
+                            style="width: 40px; height: 40px; padding: 0; border: 3px solid white; font-size: 20px;" title="Remove Photo">
+                      <i class="bx bx-x"></i>
+                    </button>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <div class="d-flex flex-column gap-3">
+                    <div class="md-field-wrapper">
+                      <label for="{{ form.profile_image.id_for_label }}" class="form-label fw-semibold mb-2 fs-5">
+                        <i class="bx bx-camera me-2"></i>Profile Photo
+                      </label>
+                      <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <!-- FIXED: Added proper onchange and ID -->
+                        <input type="file" 
+                               name="{{ form.profile_image.name }}" 
+                               id="{{ form.profile_image.id_for_label }}"
+                               class="form-control md-field profile-image-input"
+                               accept="image/jpeg,image/jpg,image/png"
+                               onchange="previewProfileImage(this)">
+                        <button type="button" class="md-outlined-button px-4 py-2" onclick="resetProfileImage()">
+                          <i class="bx bx-reset me-2"></i> Reset
+                        </button>
+                      </div>
+                      <small class="form-text text-muted mt-2 d-block">
+                        <i class="bx bx-info-circle me-1"></i>JPG, PNG. Max 2MB
+                      </small>
+                      {% if form.profile_image.errors %}
+                        <div class="invalid-feedback d-block mt-2">{{ form.profile_image.errors.0 }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Profile Form Fields -->
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.first_name.id_for_label }}">
+                      <i class="bx bx-user me-1 text-primary"></i>First Name
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                      <div class="invalid-feedback d-block">{{ form.first_name.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.last_name.id_for_label }}">
+                      <i class="bx bx-user me-1 text-primary"></i>Last Name
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                      <div class="invalid-feedback d-block">{{ form.last_name.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.email.id_for_label }}">
+                      <i class="bx bx-envelope me-1 text-primary"></i>Email
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                      <div class="invalid-feedback d-block">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.phone_number.id_for_label }}">
+                      <i class="bx bx-phone me-1 text-primary"></i>Phone Number
+                    </label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                      <div class="invalid-feedback d-block">{{ form.phone_number.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      <i class="bx bx-id-card me-1 text-muted"></i>Employee ID
+                    </label>
+                    <input type="text" class="form-control md-field bg-light" 
+                           value="{{ user.member_id|default:'Not Assigned' }}" readonly 
+                           style="background: #f8fafc; border-color: #e2e8f0;">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.staff_role.id_for_label }}">
+                      <i class="bx bx-badge me-1 text-primary"></i>Staff Role
+                    </label>
+                    {{ form.staff_role }}
+                    {% if form.staff_role.errors %}
+                      <div class="invalid-feedback d-block">{{ form.staff_role.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.date_of_birth.id_for_label }}">
+                      <i class="bx bx-calendar me-1 text-primary"></i>Date of Birth
+                    </label>
+                    {{ form.date_of_birth }}
+                    {% if form.date_of_birth.errors %}
+                      <div class="invalid-feedback d-block">{{ form.date_of_birth.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.gender.id_for_label }}">
+                      <i class="bx bx-male-female me-1 text-primary"></i>Gender
+                    </label>
+                    {{ form.gender }}
+                    {% if form.gender.errors %}
+                      <div class="invalid-feedback d-block">{{ form.gender.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.address.id_for_label }}">
+                      <i class="bx bx-map me-1 text-primary"></i>Address
+                    </label>
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                      <div class="invalid-feedback d-block">{{ form.address.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.city.id_for_label }}">City</label>
+                    {{ form.city }}
+                    {% if form.city.errors %}
+                      <div class="invalid-feedback d-block">{{ form.city.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.state.id_for_label }}">State</label>
+                    {{ form.state }}
+                    {% if form.state.errors %}
+                      <div class="invalid-feedback d-block">{{ form.state.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2" for="{{ form.pincode.id_for_label }}">Pincode</label>
+                    {{ form.pincode }}
+                    {% if form.pincode.errors %}
+                      <div class="invalid-feedback d-block">{{ form.pincode.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                  <div class="md-field-wrapper">
+                    <label class="form-label fw-semibold mb-2">
+                      <i class="bx bx-calendar-check me-1 text-muted"></i>Join Date
+                    </label>
+                    <input type="text" class="form-control md-field bg-light" 
+                           value="{{ user.join_date|date:'d M Y'|default:'Not Available' }}" readonly
+                           style="background: #f8fafc; border-color: #e2e8f0;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3">
+                <button type="button" class="md-outlined-button px-5 py-3" onclick="resetForm()">
+                  <i class="bx bx-x me-2"></i>Reset
+                </button>
+                <button type="submit" class="md-filled-button px-5 py-3">
+                  <i class="bx bx-save me-2"></i>Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right Sidebar -->
+      <div class="col-xl-4">
+        <div class="md-card">
+          <div class="md-card-header">
+            <h5 class="mb-0">
+              <i class="bx bx-info-circle me-2 text-primary"></i>
+              Account Info
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+              <span class="fw-semibold">Account Status</span>
+              <span class="badge bg-success rounded-pill px-4 py-2">Active</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">Staff Role</span>
+              <span class="badge bg-info rounded-pill px-4 py-2">{{ user.staff_role|title|default:'Staff' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FIXED JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Profile image preview function
+  window.previewProfileImage = function(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      // Check file size (2MB limit)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size must be less than 2MB');
+        input.value = '';
+        return;
+      }
+      
+      // Check file type
+      if (!file.type.match('image/(jpeg|jpg|png)')) {
+        alert('Please select a valid image file (JPG, JPEG, PNG)');
+        input.value = '';
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('profilePreview').src = e.target.result;
+        // Show clear button when new image is selected
+        const clearBtn = document.querySelector('.profile-clear-btn');
+        if (clearBtn) {
+          clearBtn.style.display = 'block';
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Clear profile image
+  window.clearProfileImage = function() {
+    const preview = document.getElementById('profilePreview');
+    preview.src = "{% static 'advadmin/assets/img/avatars/default-avatar.png' %}";
+    
+    const fileInput = document.querySelector('.profile-image-input');
+    if (fileInput) fileInput.value = '';
+    
+    // Hide clear button
+    const clearBtn = document.querySelector('.profile-clear-btn');
+    if (clearBtn) {
+      clearBtn.remove();
+    }
+    
+    // Add hidden input for image clear
+    const form = document.getElementById('profileForm');
+    let clearInput = document.querySelector('input[name="profile_image_clear"]');
+    if (!clearInput) {
+      clearInput = document.createElement('input');
+      clearInput.type = 'hidden';
+      clearInput.name = 'profile_image_clear';
+      clearInput.value = '1';
+      form.appendChild(clearInput);
+    }
+  };
+
+  // Reset profile image to original
+  window.resetProfileImage = function() {
+    const preview = document.getElementById('profilePreview');
+    {% if user.profile_image %}
+      preview.src = "{{ user.profile_image.url }}?t=" + new Date().getTime();
+    {% else %}
+      preview.src = "{% static 'advadmin/assets/img/avatars/default-avatar.png' %}";
+    {% endif %}
+    
+    const fileInput = document.querySelector('.profile-image-input');
+    if (fileInput) fileInput.value = '';
+    
+    // Remove clear input
+    const clearInput = document.querySelector('input[name="profile_image_clear"]');
+    if (clearInput) clearInput.remove();
+    
+    // Show/hide clear button based on original image
+    {% if user.profile_image %}
+    const clearBtn = document.querySelector('.profile-clear-btn');
+    if (clearBtn) {
+      clearBtn.style.display = 'block';
+    }
+    {% endif %}
+  };
+
+  // Reset entire form
+  window.resetForm = function() {
+    document.getElementById('profileForm').reset();
+    resetProfileImage();
+  };
+
+  // Auto-dismiss messages
+  setTimeout(function() {
+    document.querySelectorAll('.alert').forEach(function(alert) {
+      var bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    });
+  }, 5000);
+
+  // Clear button event listener (for dynamically added buttons)
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.profile-clear-btn')) {
+      clearProfileImage();
+    }
+  });
+});
+</script>
+
+<!-- Material Design 3 Styles (unchanged) -->
+<style>
+.md-field, input:not([type="file"]), select, textarea {
+  height: 48px;
+  border: 2px solid #e8f0fe;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background: white;
+  width: 100%;
+}
+
+.md-field:focus, input:not([type="file"]):focus, select:focus, textarea:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15);
+  outline: none;
+}
+
+textarea {
+  height: auto;
+  padding: 12px 16px;
+  min-height: 100px;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+input[type="file"] {
+  padding: 10px 16px;
+  height: auto;
+  border: 2px solid #e8f0fe;
+  border-radius: 12px;
+  background: white;
+  width: 100%;
+  cursor: pointer;
+}
+
+input[type="file"]:hover {
+  border-color: #1976d2;
+  background: #f0f7ff;
+}
+
+.md-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(25, 118, 210, 0.1);
+  overflow: hidden;
+}
+
+.md-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(25, 118, 210, 0.1);
+  background: linear-gradient(135deg, #ffffff, #fafcff);
+}
+
+.md-tabs-container {
+  background: white;
+  border-radius: 16px;
+  padding: 8px;
+  border: 1px solid rgba(25, 118, 210, 0.1);
+}
+
+.md-tab-wrapper {
+  gap: 8px;
+}
+
+.md-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 40px !important;
+  color: #64748b;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 2px solid #e8f0fe;
+  background: white;
+  text-decoration: none;
+}
+
+.md-tab:hover {
+  background: #f0f7ff;
+  border-color: #1976d2;
+  color: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(25, 118, 210, 0.12);
+}
+
+.md-tab.active {
+  background: #1976d2 !important;
+  border-color: #1976d2 !important;
+  color: white !important;
+  box-shadow: 0 8px 16px rgba(25, 118, 210, 0.24) !important;
+  transform: translateY(-2px);
+}
+
+.messages-section .alert {
+  animation: slideIn 0.3s ease;
+  border: none;
+  padding: 1rem;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.md-filled-button {
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  padding: 12px 32px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.md-filled-button:hover {
+  background: #1565c0;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(25, 118, 210, 0.3);
+  color: white;
+}
+
+.md-outlined-button {
+  background: white;
+  border: 2px solid #e8f0fe;
+  color: #1e293b;
+  border-radius: 40px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.md-outlined-button:hover {
+  background: #f0f7ff;
+  border-color: #1976d2;
+  color: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(25, 118, 210, 0.12);
+}
+
+.md-avatar-wrapper {
+  transition: transform 0.2s ease;
+}
+
+.md-avatar-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.profile-clear-btn {
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .md-tab {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+  
+  .md-avatar-wrapper img {
+    width: 120px !important;
+    height: 120px !important;
+  }
+}
+</style>
+{% endblock %}

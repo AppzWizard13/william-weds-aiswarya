@@ -1,0 +1,267 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Material Design Header -->
+    <div class="md-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div>
+          <h1 class="md-title mb-0">{% if form.instance.pk %}Edit{% else %}Add{% endif %} Party Member</h1>
+          <p class="md-subtitle">
+            {% if form.instance.pk %}
+              Update {{ form.instance.name|default:"Member" }}
+            {% else %}
+              Add bridesmaid, groomsman, best man or maid of honor
+            {% endif %}
+          </p>
+        </div>
+        <a href="{% url 'events:wedding_party_list' %}" class="md-filled-button">
+          <i class="bx bx-arrow-back me-2"></i>Back to Party
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="md-card">
+      {% if form.errors %}
+      <div class="alert alert-danger md-alert mb-4 p-4 border-0 shadow-sm rounded-3">
+        <h6 class="mb-3 fw-semibold">Please fix these errors:</h6>
+        <ul class="mb-0">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <form method="post" id="partyForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-4 align-items-end p-5">
+          
+          <!-- Image Upload Column -->
+          <div class="col-lg-4">
+            <div class="md-form-group">
+              <label class="form-label fw-semibold mb-3 d-block">Party Member Photo</label>
+              <div class="image-preview-container position-relative mx-auto mb-4 p-4 border-2 border-dashed rounded-3 text-center" 
+                   style="border-color: rgba(25, 118, 210, 0.3); background: #f8fafc; min-height: 200px; cursor: pointer; transition: all 0.3s ease;">
+                
+                {% if form.instance.image %}
+                  <img id="preview-img" src="{{ form.instance.image.url }}" class="img-fluid rounded-3 shadow-sm" style="max-height: 180px; object-fit: cover;">
+                {% else %}
+                  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                    <i class="bx bx-camera fs-2 mb-3 opacity-75"></i>
+                    <h6 class="mb-2 fw-semibold">Upload Photo</h6>
+                    <small class="text-muted">Click to upload (JPG, PNG)</small>
+                  </div>
+                {% endif %}
+                
+                {{ form.image }}
+              </div>
+              <small class="text-muted d-block text-center">Max 5MB • Recommended 400x500px</small>
+            </div>
+          </div>
+
+          <!-- Form Fields Column -->
+          <div class="col-lg-8 ps-lg-5">
+            
+            <!-- Name Field -->
+            <div class="row g-4">
+              <div class="col-12">
+                <div class="md-form-group">
+                  <label class="form-label fw-semibold mb-3">Full Name <span class="text-danger">*</span></label>
+                  <div class="position-relative">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                    <i class="bx bx-error position-absolute top-50 end-0 translate-middle-y me-3 fs-5 text-danger"></i>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Role Field -->
+              <div class="col-12">
+                <div class="md-form-group">
+                  <label class="form-label fw-semibold mb-3">Role <span class="text-danger">*</span></label>
+                  <div class="position-relative">
+                    {{ form.role }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="p-5 pt-0 border-top" style="border-color: rgba(25, 118, 210, 0.1) !important;">
+          <div class="d-flex justify-content-end gap-3">
+            <a href="{% url 'events:wedding_party_list' %}" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-semibold">
+              Cancel
+            </a>
+            <button type="submit" class="md-filled-button rounded-pill px-5 py-3 fw-semibold shadow-lg">
+              <i class="bx bx-save me-2"></i>{% if form.instance.pk %}Update Member{% else %}Add Member{% endif %}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Perfect Alignment & Image Preview */
+.image-preview-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-preview-container:hover {
+  border-color: var(--md-sys-color-primary);
+  background: rgba(25, 118, 210, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(25, 118, 210, 0.15);
+}
+
+.image-preview-container input[type="file"] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+#preview-img {
+  transition: all 0.3s ease;
+}
+
+.md-input, .form-select {
+  border: 2px solid rgba(25, 118, 210, 0.2) !important;
+  border-radius: 16px !important;
+  padding: 16px 20px !important;
+  background: #f8fafc !important;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.md-input:focus, .form-select:focus {
+  border-color: var(--md-sys-color-primary) !important;
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15), 0 8px 25px rgba(25, 118, 210, 0.1) !important;
+  background: white !important;
+  transform: translateY(-1px);
+}
+
+.md-filled-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 14px 28px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4) !important;
+}
+
+.md-filled-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 35px rgba(59, 130, 246, 0.5) !important;
+}
+
+@media (max-width: 992px) {
+  .row.g-4 > [class*="col"] {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .md-card .p-5 {
+    padding: 2rem 1.5rem !important;
+  }
+  
+  .image-preview-container {
+    min-height: 180px !important;
+  }
+}
+</style>
+
+<script>
+// Advanced Image Preview + Validation
+document.addEventListener('DOMContentLoaded', function() {
+  const fileInput = document.getElementById('{{ form.image.id_for_label }}');
+  const previewContainer = document.querySelector('.image-preview-container');
+  
+  if (fileInput) {
+    // Initial click trigger
+    previewContainer.addEventListener('click', function() {
+      fileInput.click();
+    });
+    
+    // File change handler
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Size validation
+        if (file.size > 5 * 1024 * 1024) {
+          alert('❌ Image must be less than 5MB');
+          this.value = '';
+          return;
+        }
+        
+        // Type validation
+        if (!file.type.match('image.*')) {
+          alert('❌ Please select a valid image (JPG, PNG)');
+          this.value = '';
+          return;
+        }
+        
+        // Preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewContainer.innerHTML = `
+            <img id="preview-img" src="${e.target.result}" class="img-fluid rounded-3 shadow-sm" style="max-height: 180px; object-fit: cover; width: 100%;">
+            <div class="position-absolute top-3 end-3">
+              <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-1 remove-photo" style="width: 32px; height: 32px;">
+                <i class="bx bx-x fs-7"></i>
+              </button>
+            </div>
+          `;
+          
+          // Remove photo functionality
+          document.querySelector('.remove-photo').addEventListener('click', function() {
+            previewContainer.innerHTML = `
+              <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                <i class="bx bx-camera fs-2 mb-3 opacity-75"></i>
+                <h6 class="mb-2 fw-semibold">Upload Photo</h6>
+                <small class="text-muted">Click to upload (JPG, PNG)</small>
+              </div>
+            `;
+            fileInput.value = '';
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+  
+  // Form submission validation
+  document.getElementById('partyForm').addEventListener('submit', function(e) {
+    const name = document.querySelector('input[name="name"]').value.trim();
+    const role = document.querySelector('select[name="role"]').value;
+    
+    if (!name || !role) {
+      e.preventDefault();
+      alert('Please fill Name and Role');
+      return false;
+    }
+  });
+});
+</script>
+
+{% endblock %}

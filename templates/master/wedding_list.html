@@ -1,0 +1,234 @@
+{% extends 'advadmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'mob-custom/theme.css' %}">
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    
+    <!-- Material Design Header -->
+    <div class="md-header">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div>
+          <h1 class="md-title mb-0">Wedding Events</h1>
+          <p class="md-subtitle">Manage your wedding ceremonies and celebrations</p>
+        </div>
+        <a href="{% url 'events:wedding_create' %}" class="md-filled-button">
+          <i class="bx bx-plus-circle me-2"></i>Create New Wedding
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="md-card">
+      <div class="md-card-header">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-7">
+            <h5 class="mb-0 fw-semibold" style="color: var(--md-sys-color-on-surface); font-size: 24px;">
+              All Weddings
+              <span class="badge ms-3 px-4 py-2 fw-semibold rounded-pill" 
+                    style="background: rgba(25, 118, 210, 0.15); color: var(--md-sys-color-primary); border: 1px solid rgba(25, 118, 210, 0.3);">
+                {{ weddings|length }}
+              </span>
+            </h5>
+          </div>
+          <div class="col-lg-5">
+            <form method="GET" action="{% url 'events:wedding_list' %}" class="d-flex">
+              <div class="input-group flex-grow-1">
+                <input type="text" name="search" class="form-control md-search border-start-0 shadow-none ps-0" 
+                       placeholder="Search weddings..." value="{{ search_query }}">
+                {% if search_query %}
+                <a href="{% url 'events:wedding_list' %}" class="btn ms-2 rounded-circle p-3 border-0" 
+                   style="background: #f8fafc; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bx bx-x text-muted fs-5"></i>
+                </a>
+                {% endif %}
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weddings Table -->
+      <div class="table-responsive">
+        <table class="table md-table mb-0">
+          <thead>
+            <tr>
+              <th style="width: 80px;">ID</th>
+              <th style="width: 120px;">Couple Image</th>
+              <th>Couple Name</th>
+              <th>Wedding Date</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>RSVPs</th>
+              <th style="width: 150px;" class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for wedding in weddings %}
+            <tr>
+              <td>
+                <span class="fw-bold text-muted fs-5">#{{ wedding.id }}</span>
+              </td>
+              <td class="text-center">
+                <div class="md-avatar-wrapper" style="width: 60px; height: 60px; margin: 0 auto;">
+                  {% if wedding.couple_image %}
+                    <img src="{{ wedding.couple_image.url }}" alt="{{ wedding.groom_name }} & {{ wedding.bride_name }}" class="md-avatar-img">
+                  {% else %}
+                    <img src="{% static 'events/images/default-couple.png' %}" alt="Default" class="md-avatar-img">
+                  {% endif %}
+                </div>
+              </td>
+              <td>
+                <span class="fw-semibold" style="color: var(--md-sys-color-on-surface); font-size: 16px;">
+                  {{ wedding.groom_name }} {{ wedding.groom_last_name }} & {{ wedding.bride_name }} {{ wedding.bride_last_name }}
+                </span>
+              </td>
+              <td>
+                <i class="bx bx-calendar me-1 text-muted"></i>
+                {{ wedding.wedding_date|date:"M d, Y" }}
+              </td>
+              <td>
+                <i class="bx bx-map me-1 text-muted"></i>
+                {{ wedding.wedding_location|truncatechars:30 }}
+              </td>
+              <td>
+                {% if wedding.is_active %}
+                <span class="badge bg-success">Active</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="badge bg-primary">{{ wedding.rsvps.count }}</span>
+                <small class="text-muted d-block">Attending: {{ wedding.rsvps.filter.attending.count }}</small>
+              </td>
+              <td class="text-center">
+                <div class="d-flex justify-content-center gap-2">
+                  <a href="{% url 'events:wedding_detail' wedding.id %}" 
+                     class="md-icon-button md-icon-button-info" 
+                     title="View Details">
+                    <i class="bx bx-show"></i>
+                  </a>
+                  <a href="{% url 'events:wedding_update' wedding.id %}" 
+                     class="md-icon-button md-icon-button-secondary" 
+                     title="Edit Wedding">
+                    <i class="bx bx-edit-alt"></i>
+                  </a>
+                  <button class="md-icon-button md-icon-button-danger" 
+                          data-bs-toggle="modal" data-bs-target="#deleteModal"
+                          data-wedding-id="{{ wedding.id }}" 
+                          data-wedding-name="{{ wedding.groom_name }} & {{ wedding.bride_name }}"
+                          title="Delete Wedding">
+                    <i class="bx bx-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8">
+                <div class="md-empty-state">
+                  <div class="md-empty-icon">
+                    <i class="bx bx-heart" style="color: var(--md-sys-color-on-primary-container);"></i>
+                  </div>
+                  <h5 class="mb-4 fw-semibold" style="color: var(--md-sys-color-on-surface);">
+                    No wedding events found
+                  </h5>
+                  <a href="{% url 'events:wedding_create' %}" class="md-filled-button mt-3">
+                    <i class="bx bx-plus-circle me-2"></i>Create your first wedding
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if is_paginated %}
+      <div class="p-5 pt-4 border-top" style="border-color: rgba(25, 118, 210, 0.1) !important;">
+        <nav aria-label="Page navigation">
+          <ul class="pagination md-pagination justify-content-center mb-0">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link fw-semibold" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                <i class="bx bx-chevron-left me-1"></i>Previous
+              </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+              <li class="page-item active">
+                <a class="page-link fw-bold text-white">{{ num }}</a>
+              </li>
+              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <li class="page-item">
+                <a class="page-link fw-semibold" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+              </li>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link fw-semibold" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                Next<i class="bx bx-chevron-right ms-1"></i>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-2xl rounded-4">
+      <div class="modal-header bg-gradient text-white rounded-top-4 p-5" 
+           style="background: linear-gradient(135deg, var(--md-sys-color-error), #dc2626) !important;">
+        <h5 class="modal-title fw-semibold mb-0">Delete Wedding</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-4 px-5">
+        <p class="mb-3">Delete <strong id="weddingName" class="text-danger fw-bold"></strong>?</p>
+        <p class="text-muted small mb-0">This action cannot be undone. All related data will be deleted.</p>
+      </div>
+      <div class="modal-footer border-0 pt-0 px-5 pb-5 gap-3">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-medium" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <a id="confirmDeleteBtn" class="btn btn-danger rounded-pill px-5 py-3 fw-bold shadow-lg">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Auto-show toasts
+  document.querySelectorAll('.toast').forEach(toastEl => {
+    new bootstrap.Toast(toastEl, { delay: 6000 }).show();
+  });
+
+  // Delete Modal
+  const deleteModal = document.getElementById('deleteModal');
+  if (deleteModal) {
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const weddingId = button.getAttribute('data-wedding-id');
+      const weddingName = button.getAttribute('data-wedding-name');
+      
+      document.getElementById('weddingName').textContent = weddingName;
+      const deleteUrl = "{% url 'events:wedding_delete' 0 %}".replace('0', weddingId);
+      document.getElementById('confirmDeleteBtn').setAttribute('href', deleteUrl);
+    });
+  }
+});
+</script>
+{% endblock %}
