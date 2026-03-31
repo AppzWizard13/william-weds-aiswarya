@@ -227,6 +227,22 @@ class GalleryImageUpdateView(UpdateView):
         context['page_name'] = 'gallery_update'
         context['events'] = Event.objects.all()
         return context
+    
+class GalleryImageDeleteView(DeleteView):
+    model = GalleryImage
+    success_url = reverse_lazy('events:gallery_list')
+    template_name = 'events/gallery_image_confirm_delete.html'  # Optional: create this template
+    
+    def delete(self, request, *args, **kwargs):
+        # Optional: Add success message
+        messages.success(request, 'Photo deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'gallery_delete'
+        context['events'] = Event.objects.all()
+        return context
 
 # ===== RSVP =====
 class RSVPView(FormView):
@@ -266,13 +282,20 @@ from .models import EventBanner
 class EventBannerListView(LoginRequiredMixin, ListView):
     model = EventBanner
     template_name = 'admin_panel/event_banner_list.html'
-    context_object_name = 'banners'  # changed from event_banner_list
+    context_object_name = 'banners'
 
     def get_template_names(self):
+        """Logic for switching templates belongs here."""
         admin_mode = getattr(settings, 'ADMIN_PANEL_MODE', 'basic').lower()
         if admin_mode == 'advanced':
             return ['advadmin/event_banner_list.html']
         return [self.template_name]
+
+    def get_context_data(self, **kwargs):
+        """Logic for adding extra variables to the template."""
+        context = super().get_context_data(**kwargs)
+        context['page_name'] = 'event_banner_list'
+        return context
 
 
 class EventBannerCreateView(LoginRequiredMixin, CreateView):

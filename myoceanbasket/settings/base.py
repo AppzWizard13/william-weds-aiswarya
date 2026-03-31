@@ -170,16 +170,16 @@ AUTHENTICATION_BACKENDS = (
 
 WSGI_APPLICATION = 'myoceanbasket.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'), 
-        'NAME': os.getenv('DB_NAME', 'myoceanbasket_db'), 
-        'USER': os.getenv('DB_USER', 'myoceanbasket_admin'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'xPL7y6qe1gLHAg2B9SWvW06vXSC8lxSe'),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'), 
+#         'NAME': os.getenv('DB_NAME', 'myoceanbasket_db'), 
+#         'USER': os.getenv('DB_USER', 'myoceanbasket_admin'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', 'xPL7y6qe1gLHAg2B9SWvW06vXSC8lxSe'),
+#         'HOST': os.getenv('DB_HOST', 'db'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
 DEFAULT_CHARSET = 'utf-8'
 
 AUTH_PASSWORD_VALIDATORS = [

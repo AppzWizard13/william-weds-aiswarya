@@ -28,6 +28,8 @@ urlpatterns = [
     path('gallery/', views.GalleryView.as_view(), name='gallery_list'),
     path('gallery/add/', views.GalleryImageCreateView.as_view(), name='gallery_create'),
     path('gallery/<int:pk>/update/', views.GalleryImageUpdateView.as_view(), name='gallery_update'),
+    path('gallery/<int:pk>/delete/', views.GalleryImageDeleteView.as_view(), name='gallery_delete'),  # Add this line
+
 
     # ===== RSVP =====
     path('rsvp/', views.RSVPView.as_view(), name='rsvp'),

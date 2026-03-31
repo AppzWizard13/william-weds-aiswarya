@@ -884,12 +884,12 @@
               <div>Events</div>
             </a>
           </li>
-          <li class="menu-item {% if page_name == 'event_create' %}active{% endif %}">
+          {% comment %} <li class="menu-item {% if page_name == 'event_create' %}active{% endif %}">
             <a href="{% url 'events:event_create' %}" class="menu-link">
               <i class="menu-icon tf-icons bx bx-plus"></i>
               <div>Add Event</div>
             </a>
-          </li>
+          </li> {% endcomment %}
 
           <!-- Couple -->
           <li class="menu-item {% if page_name == 'couple_list' %}active{% endif %}">
@@ -898,15 +898,15 @@
               <div>Couple</div>
             </a>
           </li>
-          <li class="menu-item {% if page_name == 'couple_create' %}active{% endif %}">
+          {% comment %} <li class="menu-item {% if page_name == 'couple_create' %}active{% endif %}">
             <a href="{% url 'events:couple_create' %}" class="menu-link">
               <i class="menu-icon tf-icons bx bx-user-plus"></i>
               <div>Add Couple</div>
             </a>
-          </li>
+          </li> {% endcomment %}
 
           <!-- Wedding Party -->
-          <li class="menu-item {% if page_name == 'wedding_party_list' %}active{% endif %}">
+          {% comment %} <li class="menu-item {% if page_name == 'wedding_party_list' %}active{% endif %}">
             <a href="{% url 'events:wedding_party_list' %}" class="menu-link">
               <i class="menu-icon tf-icons bx bx-group"></i>
               <div>Wedding Party</div>
@@ -917,24 +917,24 @@
               <i class="menu-icon tf-icons bx bx-user-plus"></i>
               <div>Add Member</div>
             </a>
-          </li>
+          </li> {% endcomment %}
 
           <!-- Gallery -->
-          <li class="menu-item {% if page_name == 'gallery' %}active{% endif %}">
+          <li class="menu-item {% if page_name == 'gallery_list' %}active{% endif %}">
             <a href="{% url 'events:gallery_list' %}" class="menu-link">
               <i class="menu-icon tf-icons bx bx-images"></i>
               <div>Gallery</div>
             </a>
           </li>
-          <li class="menu-item {% if page_name == 'gallery_create' %}active{% endif %}">
+          {% comment %} <li class="menu-item {% if page_name == 'gallery_create' %}active{% endif %}">
             <a href="{% url 'events:gallery_create' %}" class="menu-link">
               <i class="menu-icon tf-icons bx bx-image-add"></i>
               <div>Add Photo</div>
             </a>
-          </li>
+          </li> {% endcomment %}
 
           <!-- RSVP & Registry -->
-          <li class="menu-item {% if page_name == 'rsvp' %}active{% endif %}">
+          {% comment %} <li class="menu-item {% if page_name == 'rsvp' %}active{% endif %}">
             <a href="{% url 'events:rsvp' %}" class="menu-link">
               <i class="menu-icon tf-icons bx bx-check-circle"></i>
               <div>RSVP</div>
@@ -945,15 +945,17 @@
               <i class="menu-icon tf-icons bx bx-gift"></i>
               <div>Registry</div>
             </a>
-          </li>
+          </li> {% endcomment %}
 
-          <li class="menu-item {% if page_name == 'banners' %}active{% endif %}">
+          <li class="menu-item {% if page_name == 'event_banner_list' %}active{% endif %}">
               <a href="{% url 'events:event_banner_list' %}" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-image-alt"></i>
                   <div>Event Banners</div>
               </a>
           </li>
-
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Product Management</span>
+          </li>
           <!-- Category & Product Management -->
           <li class="menu-item {% if page_name == 'category_list' %}active{% endif %}">
             <a href="{% url 'master:category_list' %}" class="menu-link">

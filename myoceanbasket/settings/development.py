@@ -5,10 +5,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Database override if needed
-# DATABASES['default'].update({
-#     'ENGINE': 'django.db.backends.sqlite3',
-#     'NAME': BASE_DIR / 'db.sqlite3',
-# })
+
 
 # Example: Use console backend for emails in dev
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -45,12 +42,7 @@ SUBSCRIPTION_ORDER_PREFIX = "SUB-ORDER-DEV-TEST"
 # Database configuration for local development
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'myoceanbasket_db',
-        'USER': 'myoceanbasket_admin',
-        'PASSWORD': 'xPL7y6qe1gLHAg2B9SWvW06vXSC8lxSe',
-        'HOST': 'db',  # or 'myoceanbasket_db' if your Django app runs in Docker
-        'PORT': '5432',
-
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
